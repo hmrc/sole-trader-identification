@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.soletraderidentification.config
+package uk.gov.hmrc.soletraderidentification.models
 
-import play.api.Configuration
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import play.api.libs.json.{JsObject, JsResult, JsValue, Json, OFormat}
 
-import javax.inject.{Inject, Singleton}
+case class JourneyDataModel(journeyId: String)
 
-@Singleton
-class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig) {
+object JourneyDataModel {
 
-  val authBaseUrl: String = servicesConfig.baseUrl("auth")
+  implicit object MongoFormat extends OFormat[JourneyDataModel] {
+    override def writes(o: JourneyDataModel): JsObject =
+      Json.obj("_id" -> o.journeyId)
 
-  val auditingEnabled: Boolean = config.get[Boolean]("auditing.enabled")
-  val graphiteHost: String = config.get[String]("microservice.metrics.graphite.host")
+    override def reads(json: JsValue): JsResult[JourneyDataModel] =
+      for {
+        journeyId <- (json \ "_id").validate[String]
+      } yield JourneyDataModel(journeyId)
+  }
 
-  val timeToLiveSeconds: Int = servicesConfig.getInt("mongodb.timeToLiveSeconds")
 }

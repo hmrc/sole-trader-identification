@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.soletraderidentification.config
+package assets
 
-import play.api.Configuration
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+import java.util.UUID
 
-import javax.inject.{Inject, Singleton}
+object TestConstants {
 
-@Singleton
-class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig) {
+  val testJourneyId = "1234567"
+  val testInternalId: String = UUID.randomUUID().toString
 
-  val authBaseUrl: String = servicesConfig.baseUrl("auth")
-
-  val auditingEnabled: Boolean = config.get[Boolean]("auditing.enabled")
-  val graphiteHost: String = config.get[String]("microservice.metrics.graphite.host")
-
-  val timeToLiveSeconds: Int = servicesConfig.getInt("mongodb.timeToLiveSeconds")
 }
