@@ -17,13 +17,42 @@
 package controllers
 
 import assets.TestConstants.{testInternalId, testJourneyId}
+import play.api.Application
+import play.api.inject.bind
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json}
 import play.api.test.Helpers._
-import stubs.AuthStub
+import stubs.{AuthStub, FakeJourneyIdGenerationService}
+import uk.gov.hmrc.soletraderidentification.services.JourneyIdGenerationService
 import utils.{ComponentSpecHelper, CustomMatchers, JourneyDataMongoHelper}
 
 class JourneyDataControllerISpec extends ComponentSpecHelper with CustomMatchers with JourneyDataMongoHelper with AuthStub {
   lazy val testIncorrectAuthInternalId = "testIncorrectAuthInternalId"
+
+  override lazy val app: Application = new GuiceApplicationBuilder()
+    .overrides(bind[JourneyIdGenerationService].toInstance(new FakeJourneyIdGenerationService(testJourneyId)))
+    .configure(config)
+    .build()
+
+
+  "POST /journey " when {
+    "a new journey begins" should {
+      "return CREATED with the newly generated journey ID" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        val res = post("/journey")(Json.obj())
+
+        res.status mustBe CREATED
+        (res.json \ "journeyId").as[String] mustBe testJourneyId
+        findById(testJourneyId).map(_.-("creationTimestamp")) mustBe Some(Json.obj("_id" -> testJourneyId, "authInternalId" -> testInternalId))
+      }
+      "return Unauthorised" in {
+        stubAuthFailure()
+        val res = post("/journey")(Json.obj())
+
+        res.status mustBe UNAUTHORIZED
+      }
+    }
+  }
 
   "GET /journey/:journeyId" when {
     "there is data stored against the journey ID" should {
@@ -162,5 +191,66 @@ class JourneyDataControllerISpec extends ComponentSpecHelper with CustomMatchers
 
   }
 
+  "PUT /journey/:journeyId/:dataKey" when {
+    "there is a journey for the provided journey ID" should {
+      "update the data with the provided data" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        val testDataKey = "testDataKey"
+        val testDataValue = "testDataValue"
+
+        insertById(testJourneyId, testInternalId)
+
+        val res = put(s"/journey/$testJourneyId/$testDataKey")(testDataValue)
+
+        res.status mustBe OK
+
+        findById(testJourneyId) mustBe Some(
+          Json.obj(
+            "_id" -> testJourneyId,
+            "authInternalId" -> testInternalId,
+            testDataKey -> testDataValue
+          )
+        )
+      }
+    }
+    "there is no journey for the provided journey ID" should {
+      "return Internal Server Error" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        val testDataKey = "testDataKey"
+        val testDataValue = "testDataValue"
+
+        val res = put(s"/journey/$testJourneyId/$testDataKey")(testDataValue)
+
+        res.status mustBe INTERNAL_SERVER_ERROR
+
+        findById(testJourneyId) mustBe None
+      }
+    }
+    "the user cannot be authorised" should {
+      "return Unauthorised" in {
+        stubAuthFailure()
+
+        val testDataKey = "testDataKey"
+        val testDataValue = "testDataValue"
+
+        val res = put(s"/journey/$testJourneyId/$testDataKey")(testDataValue)
+
+        res.status mustBe UNAUTHORIZED
+      }
+    }
+    "the provided internal ID does not match the ID on the record" should {
+      "return Internal Server Error" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        val testDataKey = "testDataKey"
+        val testDataValue = "testDataValue"
+
+        insertById(testJourneyId, testIncorrectAuthInternalId)
+
+        val res = put(s"/journey/$testJourneyId/$testDataKey")(testDataValue)
+
+        res.status mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+  }
 
 }

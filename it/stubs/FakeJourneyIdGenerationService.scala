@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package assets
+package stubs
 
-import java.util.UUID
+import uk.gov.hmrc.soletraderidentification.services.JourneyIdGenerationService
 
-object TestConstants {
-
-  val testJourneyId: String = UUID.randomUUID().toString
-  val testInternalId: String = UUID.randomUUID().toString
-
+class FakeJourneyIdGenerationService(fakeJourneyId: String) extends JourneyIdGenerationService {
+  override def generateJourneyId(): String = fakeJourneyId
 }

@@ -21,6 +21,7 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json.{JsString, Json}
 import play.api.test.Helpers._
+import reactivemongo.api.commands.UpdateWriteResult
 import uk.gov.hmrc.soletraderidentification.repositories.JourneyDataRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -29,11 +30,22 @@ import scala.concurrent.Future
 class JourneyDataServiceSpec extends AnyWordSpec with Matchers with IdiomaticMockito with ResetMocksAfterEachTest {
 
   val mockJourneyDataRepository: JourneyDataRepository = mock[JourneyDataRepository]
+  val mockJourneyIdGenerationService: JourneyIdGenerationService = mock[JourneyIdGenerationService]
 
-  object TestJourneyDataService extends JourneyDataService(mockJourneyDataRepository)
+  object TestJourneyDataService extends JourneyDataService(mockJourneyDataRepository, mockJourneyIdGenerationService)
 
   val testJourneyId = "testJourneyId"
   val testInternalId = "testInternalId"
+
+  "createJourney" should {
+    "call to store a new journey with the generated journey ID" in {
+      mockJourneyIdGenerationService.generateJourneyId() returns testJourneyId
+      mockJourneyDataRepository.createJourney(eqTo(testJourneyId), eqTo(testInternalId)) returns Future.successful(testJourneyId)
+
+      await(TestJourneyDataService.createJourney(testInternalId)) mustBe testJourneyId
+    }
+  }
+
 
   "getJourneyData" should {
     "return the stored journey data" when {
@@ -76,6 +88,19 @@ class JourneyDataServiceSpec extends AnyWordSpec with Matchers with IdiomaticMoc
 
         await(TestJourneyDataService.getJourneyDataByKey(testJourneyId, testKey, testInternalId)) mustBe None
       }
+    }
+  }
+
+  "updateJourneyData" should {
+    "call to update the stored data" in {
+      val testKey = "testKey"
+      val testValue = JsString("testValue")
+
+      val writeResult = mock[UpdateWriteResult]
+
+      mockJourneyDataRepository.updateJourneyData(testJourneyId, testKey, testValue, testInternalId) returns Future.successful(writeResult)
+
+      await(TestJourneyDataService.updateJourneyData(testJourneyId, testKey, testValue, testInternalId)) mustBe writeResult
     }
   }
 
