@@ -20,6 +20,8 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.Application
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Writes
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import play.api.test.Helpers.await
@@ -31,6 +33,11 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
   with BeforeAndAfterAll
   with BeforeAndAfterEach
   with GuiceOneServerPerSuite {
+
+  override lazy val app: Application = new GuiceApplicationBuilder()
+    .configure(config)
+    .configure("play.http.router" -> "testOnlyDoNotUseInAppConf.Routes")
+    .build
 
   val mockHost: String = WiremockHelper.wiremockHost
   val mockPort: String = WiremockHelper.wiremockPort.toString
