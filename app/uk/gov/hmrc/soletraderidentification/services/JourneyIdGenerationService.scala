@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package assets
+package uk.gov.hmrc.soletraderidentification.services
 
 import java.util.UUID
+import javax.inject.{Inject, Singleton}
 
-object TestConstants {
-
-  val testJourneyId: String = UUID.randomUUID().toString
-  val testInternalId: String = UUID.randomUUID().toString
-
+@Singleton
+class JourneyIdGenerationService @Inject()() {
+  def generateJourneyId(): String = UUID.randomUUID().toString
 }

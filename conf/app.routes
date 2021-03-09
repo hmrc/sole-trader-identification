@@ -2,5 +2,9 @@
 
 GET        /hello-world                     uk.gov.hmrc.soletraderidentification.controllers.MicroserviceHelloWorldController.hello
 
+POST        /journey                        uk.gov.hmrc.soletraderidentification.controllers.JourneyDataController.createJourney()
+
 GET         /journey/:journeyId             uk.gov.hmrc.soletraderidentification.controllers.JourneyDataController.getJourneyData(journeyId)
 GET         /journey/:journeyId/:dataKey    uk.gov.hmrc.soletraderidentification.controllers.JourneyDataController.getJourneyDataByKey(journeyId, dataKey)
+
+PUT         /journey/:journeyId/:dataKey    uk.gov.hmrc.soletraderidentification.controllers.JourneyDataController.updateJourneyData(journeyId, dataKey)

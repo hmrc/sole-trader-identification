@@ -23,8 +23,15 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class JourneyDataService @Inject()(journeyDataRepository: JourneyDataRepository
+class JourneyDataService @Inject()(journeyDataRepository: JourneyDataRepository,
+                                   journeyIdGenerationService: JourneyIdGenerationService
                                   )(implicit ec: ExecutionContext){
+
+
+  def createJourney(authInternalId: String): Future[String] = {
+    val journeyId = journeyIdGenerationService.generateJourneyId()
+    journeyDataRepository.createJourney(journeyId, authInternalId)
+  }
 
   def getJourneyData(journeyId: String, authInternalId: String): Future[Option[JsObject]] = {
     journeyDataRepository.getJourneyData(journeyId, authInternalId)
@@ -35,6 +42,10 @@ class JourneyDataService @Inject()(journeyDataRepository: JourneyDataRepository
       case Some(json) => (json \ dataKey).asOpt[JsValue]
       case None => None
     }
+  }
+
+  def updateJourneyData(journeyId: String, dataKey: String, data: JsValue, authInternalId: String): Future[Any] = {
+    journeyDataRepository.updateJourneyData(journeyId, dataKey, data, authInternalId)
   }
 
 }

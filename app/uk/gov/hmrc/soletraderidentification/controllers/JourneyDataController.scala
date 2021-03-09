@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.soletraderidentification.controllers
 
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.internalId
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
@@ -31,6 +31,20 @@ class JourneyDataController @Inject()(cc: ControllerComponents,
                                       val authConnector: AuthConnector,
                                       journeyDataService: JourneyDataService
                                      )(implicit ec: ExecutionContext) extends BackendController(cc) with AuthorisedFunctions {
+
+
+  def createJourney(): Action[AnyContent] = Action.async {
+    implicit request =>
+      authorised().retrieve(internalId) {
+        case Some(internalId) =>
+          val journeyIdKey = "journeyId"
+          journeyDataService.createJourney(internalId).map {
+            journeyId => Created(Json.obj(journeyIdKey -> journeyId))
+          }
+        case None =>
+          Future.successful(Unauthorized)
+      }
+  }
 
   def getJourneyData(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
@@ -64,5 +78,17 @@ class JourneyDataController @Inject()(cc: ControllerComponents,
       }
   }
 
+
+  def updateJourneyData(journeyId: String, dataKey: String): Action[JsValue] = Action.async(parse.json) {
+    implicit req =>
+      authorised().retrieve(internalId) {
+        case Some(internalId) =>
+          journeyDataService.updateJourneyData(journeyId, dataKey, req.body, internalId).map {
+            _ => Ok
+          }
+        case None =>
+          Future.successful(Unauthorized)
+      }
+  }
 
 }
