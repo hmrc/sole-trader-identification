@@ -1,7 +1,5 @@
 # microservice specific routes
 
-GET        /hello-world                     uk.gov.hmrc.soletraderidentification.controllers.MicroserviceHelloWorldController.hello
-
 POST        /journey                        uk.gov.hmrc.soletraderidentification.controllers.JourneyDataController.createJourney()
 
 GET         /journey/:journeyId             uk.gov.hmrc.soletraderidentification.controllers.JourneyDataController.getJourneyData(journeyId)
