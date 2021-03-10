@@ -16,16 +16,15 @@
 
 package utils
 
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Writes
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
-import play.api.test.Helpers.await
-import play.api.test.Helpers._
+import play.api.test.Helpers.{await, _}
 
 trait ComponentSpecHelper extends AnyWordSpec with Matchers
   with CustomMatchers
