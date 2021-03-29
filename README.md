@@ -43,12 +43,11 @@ A valid journeyId must be sent in the URI
 Example response body:
 ```
 {
-"fullName":
-    {"firstName":"John",
-    "lastName":"Smith"},
-"dateOfBirth":"1978-01-05",
-"nino":"AA111111A",
-"sautr":"1234567890"
+"firstName": "John",
+"lastName": "Smith",
+"dateOfBirth": "1978-01-05",
+"nino": "AA111111A",
+"sautr": "1234567890"
 }
 ```
 
