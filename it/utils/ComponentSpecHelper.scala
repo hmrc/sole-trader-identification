@@ -88,6 +88,10 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
     )
   }
 
+  def delete[T](uri: String): WSResponse = {
+    await(buildClient(uri).delete())
+  }
+
   val baseUrl: String = "/sole-trader-identification"
 
   private def buildClient(path: String): WSRequest =
