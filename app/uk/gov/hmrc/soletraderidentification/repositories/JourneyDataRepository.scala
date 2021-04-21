@@ -17,6 +17,7 @@
 package uk.gov.hmrc.soletraderidentification.repositories
 
 import play.api.libs.json._
+import reactivemongo.play.json._
 import play.modules.reactivemongo.ReactiveMongoComponent
 import reactivemongo.api.commands.UpdateWriteResult
 import reactivemongo.api.indexes.{Index, IndexType}
@@ -69,6 +70,19 @@ class JourneyDataRepository @Inject()(reactiveMongoComponent: ReactiveMongoCompo
       ),
       Json.obj(
         "$set" -> Json.obj(dataKey -> data)
+      ),
+      upsert = false,
+      multi = false
+    ).filter(_.n == 1)
+
+  def removeJourneyDataField(journeyId: String, authInternalId: String, dataKey: String): Future[UpdateWriteResult] =
+    collection.update(true).one(
+      Json.obj(
+        JourneyIdKey -> journeyId,
+        AuthInternalIdKey -> authInternalId
+      ),
+      Json.obj(
+        "$unset" -> Json.obj(dataKey -> 1)
       ),
       upsert = false,
       multi = false

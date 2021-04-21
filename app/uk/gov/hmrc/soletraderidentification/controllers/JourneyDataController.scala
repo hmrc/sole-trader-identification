@@ -80,11 +80,23 @@ class JourneyDataController @Inject()(cc: ControllerComponents,
 
 
   def updateJourneyData(journeyId: String, dataKey: String): Action[JsValue] = Action.async(parse.json) {
-    implicit req =>
+    implicit request =>
       authorised().retrieve(internalId) {
         case Some(internalId) =>
-          journeyDataService.updateJourneyData(journeyId, dataKey, req.body, internalId).map {
+          journeyDataService.updateJourneyData(journeyId, dataKey, request.body, internalId).map {
             _ => Ok
+          }
+        case None =>
+          Future.successful(Unauthorized)
+      }
+  }
+
+  def removeJourneyDataField(journeyId: String, dataKey: String): Action[AnyContent] = Action.async {
+    implicit request =>
+      authorised().retrieve(internalId) {
+        case Some(internalId) =>
+          journeyDataService.removeJourneyDataField(journeyId, internalId, dataKey).map {
+            _ => NoContent
           }
         case None =>
           Future.successful(Unauthorized)

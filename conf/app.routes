@@ -1,8 +1,10 @@
 # microservice specific routes
 
-POST        /journey                        uk.gov.hmrc.soletraderidentification.controllers.JourneyDataController.createJourney()
+POST        /journey                               uk.gov.hmrc.soletraderidentification.controllers.JourneyDataController.createJourney()
 
-GET         /journey/:journeyId             uk.gov.hmrc.soletraderidentification.controllers.JourneyDataController.getJourneyData(journeyId)
-GET         /journey/:journeyId/:dataKey    uk.gov.hmrc.soletraderidentification.controllers.JourneyDataController.getJourneyDataByKey(journeyId, dataKey)
+GET         /journey/:journeyId                    uk.gov.hmrc.soletraderidentification.controllers.JourneyDataController.getJourneyData(journeyId)
+GET         /journey/:journeyId/:dataKey           uk.gov.hmrc.soletraderidentification.controllers.JourneyDataController.getJourneyDataByKey(journeyId, dataKey)
 
-PUT         /journey/:journeyId/:dataKey    uk.gov.hmrc.soletraderidentification.controllers.JourneyDataController.updateJourneyData(journeyId, dataKey)
+PUT         /journey/:journeyId/:dataKey           uk.gov.hmrc.soletraderidentification.controllers.JourneyDataController.updateJourneyData(journeyId, dataKey)
+
+DELETE      /journey/:journeyId/:dataKey           uk.gov.hmrc.soletraderidentification.controllers.JourneyDataController.removeJourneyDataField(journeyId, dataKey)
