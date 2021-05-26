@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-package assets
+package uk.gov.hmrc.soletraderidentification.featureswitch.core.models
 
-import java.util.UUID
-
-object TestConstants {
-
-  val testJourneyId: String = UUID.randomUUID().toString
-  val testInternalId: String = UUID.randomUUID().toString
-  val testSafeId: String = UUID.randomUUID().toString
-  val testNino: String = "AA111111A"
-  val testSautr: String = "1234567890"
-
-
+trait FeatureSwitch {
+  val configName: String
+  val displayName: String
 }

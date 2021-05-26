@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package assets
+package uk.gov.hmrc.soletraderidentification.featureswitch.core.models
 
-import java.util.UUID
+import play.api.libs.json.{Json, OFormat}
 
-object TestConstants {
 
-  val testJourneyId: String = UUID.randomUUID().toString
-  val testInternalId: String = UUID.randomUUID().toString
-  val testSafeId: String = UUID.randomUUID().toString
-  val testNino: String = "AA111111A"
-  val testSautr: String = "1234567890"
+case class FeatureSwitchSetting(configName: String,
+                                displayName: String,
+                                isEnabled: Boolean)
 
+object FeatureSwitchSetting {
+
+  implicit val format: OFormat[FeatureSwitchSetting] = Json.format[FeatureSwitchSetting]
 
 }

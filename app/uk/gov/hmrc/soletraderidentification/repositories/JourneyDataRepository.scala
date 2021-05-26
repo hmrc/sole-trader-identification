@@ -16,8 +16,10 @@
 
 package uk.gov.hmrc.soletraderidentification.repositories
 
+import java.time.Instant
+
+import javax.inject.{Inject, Singleton}
 import play.api.libs.json._
-import reactivemongo.play.json._
 import play.modules.reactivemongo.ReactiveMongoComponent
 import reactivemongo.api.commands.UpdateWriteResult
 import reactivemongo.api.indexes.{Index, IndexType}
@@ -28,8 +30,6 @@ import uk.gov.hmrc.soletraderidentification.config.AppConfig
 import uk.gov.hmrc.soletraderidentification.models.JourneyDataModel
 import uk.gov.hmrc.soletraderidentification.repositories.JourneyDataRepository._
 
-import java.time.Instant
-import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
