@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-package assets
+package stubs
 
-import java.util.UUID
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import play.api.libs.json.{JsValue, Json}
+import utils.WireMockMethods
 
-object TestConstants {
+trait GetSaReferenceStub extends WireMockMethods {
 
-  val testJourneyId: String = UUID.randomUUID().toString
-  val testInternalId: String = UUID.randomUUID().toString
-  val testSafeId: String = UUID.randomUUID().toString
-  val testNino: String = "AA111111A"
-  val testSautr: String = "1234567890"
+  private val desHeaders = Map(
+    "Authorization" -> "Bearer dev",
+    "Environment" -> "dev"
+  )
 
+  def stubGetSaReference(nino: String)(status: Int, body: JsValue = Json.obj()): StubMapping =
+    when(method = GET, uri = s"/corporation-tax/identifiers/nino/$nino", headers = desHeaders)
+      .thenReturn(status, body)
 
 }

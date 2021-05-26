@@ -1,0 +1,7 @@
+GET        /corporation-tax/identifiers/nino/:nino                      uk.gov.hmrc.soletraderidentification.testOnly.GetSaReferenceStubController.getSaReference(nino: String)
+
+GET        /api/feature-switches                                        uk.gov.hmrc.soletraderidentification.featureswitch.api.controllers.FeatureSwitchApiController.getFeatureSwitches()
+
+POST       /api/feature-switches                                        uk.gov.hmrc.soletraderidentification.featureswitch.api.controllers.FeatureSwitchApiController.updateFeatureSwitches()
+
+POST       /cross-regime/register/VATC                                  uk.gov.hmrc.soletraderidentification.testOnly.RegisterWithMultipleIdentifiersStubController.registerWithMultipleIdentifiers

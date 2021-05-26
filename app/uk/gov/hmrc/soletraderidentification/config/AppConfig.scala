@@ -16,18 +16,37 @@
 
 package uk.gov.hmrc.soletraderidentification.config
 
+import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-
-import javax.inject.{Inject, Singleton}
+import uk.gov.hmrc.soletraderidentification.featureswitch.core.config.{DesStub, FeatureSwitching, StubGetSaReference}
 
 @Singleton
-class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig) {
+class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig) extends FeatureSwitching {
 
   val authBaseUrl: String = servicesConfig.baseUrl("auth")
 
   val auditingEnabled: Boolean = config.get[Boolean]("auditing.enabled")
   val graphiteHost: String = config.get[String]("microservice.metrics.graphite.host")
+
+  def getSaReferenceUrl(nino: String): String = {
+    val baseUrl = if (isEnabled(StubGetSaReference)) desStubBaseUrl else  desBaseUrl
+    s"$baseUrl/corporation-tax/identifiers/nino/$nino"
+  }
+
+  lazy val getRegisterWithMultipleIdentifiersUrl: String = {
+    val baseUrl = if (isEnabled(DesStub)) desStubBaseUrl else desBaseUrl
+    s"$baseUrl/cross-regime/register/VATC"
+  }
+
+
+  lazy val desBaseUrl: String = servicesConfig.getString("microservice.services.des.url")
+
+  lazy val desStubBaseUrl: String = servicesConfig.getString("microservice.services.des.stub-url")
+
+  lazy val desAuthorisationToken: String = s"Bearer ${servicesConfig.getString("microservice.services.des.authorisation-token")}"
+
+  lazy val desEnvironmentHeader: (String, String) = "Environment" -> servicesConfig.getString("microservice.services.des.environment")
 
   val timeToLiveSeconds: Int = servicesConfig.getInt("mongodb.timeToLiveSeconds")
 }

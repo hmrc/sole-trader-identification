@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-package assets
+package uk.gov.hmrc.soletraderidentification.featureswitch.core.config
 
-import java.util.UUID
+import uk.gov.hmrc.soletraderidentification.featureswitch.core.models.FeatureSwitch
 
-object TestConstants {
+trait FeatureSwitching {
 
-  val testJourneyId: String = UUID.randomUUID().toString
-  val testInternalId: String = UUID.randomUUID().toString
-  val testSafeId: String = UUID.randomUUID().toString
-  val testNino: String = "AA111111A"
-  val testSautr: String = "1234567890"
+  val FEATURE_SWITCH_ON = "true"
+  val FEATURE_SWITCH_OFF = "false"
 
+  def isEnabled(featureSwitch: FeatureSwitch): Boolean =
+    sys.props get featureSwitch.configName contains FEATURE_SWITCH_ON
+
+  def enable(featureSwitch: FeatureSwitch): Unit =
+    sys.props += featureSwitch.configName -> FEATURE_SWITCH_ON
+
+  def disable(featureSwitch: FeatureSwitch): Unit =
+    sys.props += featureSwitch.configName -> FEATURE_SWITCH_OFF
 
 }

@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package assets
+package uk.gov.hmrc.soletraderidentification.models
 
-import java.util.UUID
+import play.api.libs.json.{Json, OFormat}
 
-object TestConstants {
+case class SoleTraderDetailsModel(nino: String, sautr: String)
 
-  val testJourneyId: String = UUID.randomUUID().toString
-  val testInternalId: String = UUID.randomUUID().toString
-  val testSafeId: String = UUID.randomUUID().toString
-  val testNino: String = "AA111111A"
-  val testSautr: String = "1234567890"
-
-
+object SoleTraderDetailsModel {
+  implicit val format: OFormat[SoleTraderDetailsModel] = Json.format[SoleTraderDetailsModel]
 }
+
+

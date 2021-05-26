@@ -49,6 +49,13 @@ Example response body:
 "dateOfBirth":"1978-01-05",
 "nino":"AA111111A",
 "sautr":"1234567890"
+"businessVerification": {
+    "verificationStatus":"PASS"
+  },
+"registration": {
+    "registrationStatus":"REGISTERED",
+    "registeredBusinessPartnerId":"X00000123456789"
+  }
 }
 ```
 
@@ -104,6 +111,79 @@ Example request body:
 | ```OK(200)```                           |  ```OK```
 | ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```
 
+#### POST /validate-details 
+
+---
+Checks if the user entered identifiers match what is held in the database.
+This endpoint is feature switched using the `Use stub for Get SA Reference` switch, which returns a specific SAUTR based on the NINO. 
+
+##### Request:
+Example Body:
+
+```
+{
+"nino": AA111111A,
+"sautr": 1234567890
+}
+```
+
+##### Response:
+
+| Expected Status                         | Reason  
+|-----------------------------------------|------------------------------
+| ```OK(200)```                           |  ```Identifiers found in database and check returned a result```       
+| ```NOT_FOUND(404)```                    |  ```No identifiers found in databse```
+
+Example response bodies:
+```
+{"matched":true}
+```
+or
+```
+{"matched":false}
+```
+#### POST /register  
+
+___
+Submits a registration request to the downstream Register API.
+This API is feature switched behind the `Use stub for submissions to DES` switch so it can be stubbed using the Register test endpoint described below.
+
+##### Request:
+Body:
+
+```
+{
+"soleTrader": {
+            "nino": AA111111A,
+            "sautr": 1234567890
+           }
+}
+```
+
+##### Response:
+
+Status: **OK(200)**
+Attempted registration and returns result of call       
+
+
+Example response bodies:
+```
+{
+"registration":{
+                "registrationStatus":"REGISTERED",
+                "registeredBusinessPartnerId":"<randomm UUID>"
+               }
+}
+```
+or
+```
+{
+"registration":{
+                "registrationStatus":"REGISTRATION_FAILED",
+               }
+}
+```
+
 #### DELETE /journey/:journeyId/:dataKey
 
 ---
@@ -125,6 +205,27 @@ Example request URI:
 | ```NO_CONTENT(204)```                   |  ```Field successfully deleted from database```
 | ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```
 
+#### POST /test-only/cross-regime/register/:identifier   
+
+---
+Stub for downstream Register API
+
+##### Request:
+No body is required for this request as this always returns a successful response regardless of the data sent.
+
+##### Response:
+Status: **OK(200)**
+
+Example Response body: 
+
+```
+{
+"identification":{
+                  "idType":"SAFEID",
+                  "idValue":"X00000123456789"
+                 }
+}
+```
 
 ### License
 

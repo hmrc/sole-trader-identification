@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package assets
+package uk.gov.hmrc.soletraderidentification.models
 
-import java.util.UUID
+sealed trait SoleTraderDetailsValidationResult
 
-object TestConstants {
+case object DetailsMatched extends SoleTraderDetailsValidationResult
 
-  val testJourneyId: String = UUID.randomUUID().toString
-  val testInternalId: String = UUID.randomUUID().toString
-  val testSafeId: String = UUID.randomUUID().toString
-  val testNino: String = "AA111111A"
-  val testSautr: String = "1234567890"
+case object DetailsMismatched extends SoleTraderDetailsValidationResult
 
-
-}
+case object DetailsNotFound extends SoleTraderDetailsValidationResult

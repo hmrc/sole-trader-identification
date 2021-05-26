@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-package assets
+package uk.gov.hmrc.soletraderidentification.featureswitch.core.config
 
-import java.util.UUID
+import uk.gov.hmrc.soletraderidentification.featureswitch.core.models.FeatureSwitch
 
-object TestConstants {
+trait FeatureSwitchRegistry {
 
-  val testJourneyId: String = UUID.randomUUID().toString
-  val testInternalId: String = UUID.randomUUID().toString
-  val testSafeId: String = UUID.randomUUID().toString
-  val testNino: String = "AA111111A"
-  val testSautr: String = "1234567890"
+  def switches: Seq[FeatureSwitch]
 
+  def apply(name: String): FeatureSwitch =
+    get(name) match {
+      case Some(switch) => switch
+      case None => throw new IllegalArgumentException("Invalid feature switch: " + name)
+    }
+
+  def get(name: String): Option[FeatureSwitch] = switches find (_.configName == name)
 
 }
