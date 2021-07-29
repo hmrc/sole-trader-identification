@@ -17,7 +17,6 @@
 package uk.gov.hmrc.soletraderidentification.repositories
 
 import java.time.Instant
-
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json._
 import play.modules.reactivemongo.ReactiveMongoComponent
@@ -83,6 +82,20 @@ class JourneyDataRepository @Inject()(reactiveMongoComponent: ReactiveMongoCompo
       ),
       Json.obj(
         "$unset" -> Json.obj(dataKey -> 1)
+      ),
+      upsert = false,
+      multi = false
+    ).filter(_.n == 1)
+
+  def removeJourneyData(journeyId: String, authInternalId: String): Future[UpdateWriteResult] =
+    collection.update(true).one(
+      Json.obj(
+        JourneyIdKey -> journeyId,
+        AuthInternalIdKey -> authInternalId
+      ),
+      Json.obj(
+        JourneyIdKey -> journeyId,
+        AuthInternalIdKey -> authInternalId
       ),
       upsert = false,
       multi = false

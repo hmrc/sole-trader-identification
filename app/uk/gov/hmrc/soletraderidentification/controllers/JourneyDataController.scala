@@ -102,5 +102,16 @@ class JourneyDataController @Inject()(cc: ControllerComponents,
           Future.successful(Unauthorized)
       }
   }
+  def removeJourneyData(journeyId: String): Action[AnyContent] = Action.async {
+    implicit request =>
+      authorised().retrieve(internalId) {
+        case Some(internalId) =>
+          journeyDataService.removeJourneyData(journeyId, internalId).map {
+            _ => NoContent
+          }
+        case None =>
+          Future.successful(Unauthorized)
+      }
+  }
 
 }

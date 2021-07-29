@@ -9,6 +9,8 @@ PUT           /journey/:journeyId/:dataKey        uk.gov.hmrc.soletraderidentifi
 
 DELETE        /journey/:journeyId/:dataKey        uk.gov.hmrc.soletraderidentification.controllers.JourneyDataController.removeJourneyDataField(journeyId, dataKey)
 
+DELETE        /journey/:journeyId                 uk.gov.hmrc.soletraderidentification.controllers.JourneyDataController.removeJourneyData(journeyId)
+
 POST          /validate-details                   uk.gov.hmrc.soletraderidentification.controllers.ValidateSoleTraderDetailsController.validateDetails()
 
 POST          /register                           uk.gov.hmrc.soletraderidentification.controllers.RegisterBusinessEntityController.register()

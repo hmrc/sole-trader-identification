@@ -21,8 +21,9 @@ import play.api.libs.json.{JsString, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.soletraderidentification.models.JourneyDataModel
 import uk.gov.hmrc.soletraderidentification.repositories.JourneyDataRepository
+import uk.gov.hmrc.soletraderidentification.repositories.JourneyDataRepository._
 import utils.ComponentSpecHelper
-
+import reactivemongo.play.json.JsObjectDocumentWriter
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class JourneyDataRepositoryISpec extends ComponentSpecHelper {
@@ -77,7 +78,6 @@ class JourneyDataRepositoryISpec extends ComponentSpecHelper {
       await(repo.updateJourneyData(testJourneyId, testKey, JsString(testData), testInternalId))
       await(repo.removeJourneyDataField(testJourneyId, testInternalId, testKey))
       await(repo.getJourneyData(testJourneyId, testInternalId)).map(_.-(creationTimestampKey)) mustBe Some(Json.obj(authInternalIdKey -> testInternalId))
-
     }
     "pass successfully when the field is not present" in {
       val testKey = "testKey"
@@ -87,10 +87,19 @@ class JourneyDataRepositoryISpec extends ComponentSpecHelper {
       await(repo.createJourney(testJourneyId, testInternalId))
       await(repo.updateJourneyData(testJourneyId, testKey, JsString(testData), testInternalId))
       await(repo.removeJourneyDataField(testJourneyId, testInternalId, testSecondKey))
-      await(repo.getJourneyData(testJourneyId, testInternalId)).map(_.-(creationTimestampKey)) mustBe
-        Some(Json.obj(authInternalIdKey -> testInternalId, testKey -> testData))
+      await(repo.getJourneyData(testJourneyId, testInternalId)).map(_.-(creationTimestampKey)) mustBe Some(Json.obj(authInternalIdKey -> testInternalId, testKey -> testData))
     }
+  }
+  "removeJourneyData" should {
+    "successfully remove data associated with journeyId" in {
+      val json = Json.obj(JourneyIdKey -> testJourneyId,
+        AuthInternalIdKey -> testInternalId,
+        "FullName" -> Json.obj("firstName" -> "John", "lastName" -> "Smith"))
 
+      await(repo.collection.insert.one(json))
+      await(repo.removeJourneyData(testJourneyId, testInternalId))
+      await(repo.getJourneyData(testJourneyId, testInternalId)).map(_.-(creationTimestampKey)) mustBe Some(Json.obj(authInternalIdKey -> testInternalId))
 
+    }
   }
 }
