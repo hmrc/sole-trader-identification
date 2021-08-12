@@ -34,7 +34,7 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
     s"$baseUrl/corporation-tax/identifiers/nino/$nino"
   }
 
-  lazy val getRegisterWithMultipleIdentifiersUrl: String = {
+  def getRegisterWithMultipleIdentifiersUrl: String = {
     val baseUrl = if (isEnabled(DesStub)) desStubBaseUrl else desBaseUrl
     s"$baseUrl/cross-regime/register/VATC"
   }
