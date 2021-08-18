@@ -19,7 +19,7 @@ package uk.gov.hmrc.soletraderidentification.config
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.soletraderidentification.featureswitch.core.config.{DesStub, FeatureSwitching, StubGetSaReference}
+import uk.gov.hmrc.soletraderidentification.featureswitch.core.config.{DesStub,TrnStub, FeatureSwitching, StubGetSaReference}
 
 @Singleton
 class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig) extends FeatureSwitching {
@@ -34,15 +34,26 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
     s"$baseUrl/corporation-tax/identifiers/nino/$nino"
   }
 
-  lazy val getRegisterWithMultipleIdentifiersUrl: String = {
+  def getRegisterWithMultipleIdentifiersUrl: String = {
     val baseUrl = if (isEnabled(DesStub)) desStubBaseUrl else desBaseUrl
     s"$baseUrl/cross-regime/register/VATC"
   }
 
+  lazy val integrationFrameworkEnvironmentHeader: String = servicesConfig.getString("microservice.services.integration-framework.environment")
+  lazy val integrationFrameworkAuthorizationHeader: String = s"Bearer ${servicesConfig.getString("microservice.services.integration-framework.authorization-token")}"
+
+  def getTemporaryReferenceNumberUrl: String = {
+    val baseUrl = if (isEnabled(TrnStub)) integrationFrameworkStubBaseUrl else integrationFrameworkBaseUrl
+    s"$baseUrl/individuals/trn"
+  }
 
   lazy val desBaseUrl: String = servicesConfig.getString("microservice.services.des.url")
 
   lazy val desStubBaseUrl: String = servicesConfig.getString("microservice.services.des.stub-url")
+
+  lazy val integrationFrameworkBaseUrl: String = servicesConfig.getString("microservice.services.integration-framework.url")
+
+  lazy val integrationFrameworkStubBaseUrl: String = servicesConfig.getString("microservice.services.integration-framework.stub-url")
 
   lazy val desAuthorisationToken: String = s"Bearer ${servicesConfig.getString("microservice.services.des.authorisation-token")}"
 
