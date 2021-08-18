@@ -14,25 +14,21 @@
  * limitations under the License.
  */
 
-package assets
+package uk.gov.hmrc.soletraderidentification.services
 
 
+import javax.inject.{Inject, Singleton}
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.soletraderidentification.connectors.GetTemporaryReferenceConnector
 import uk.gov.hmrc.soletraderidentification.models.{Address, FullName}
-
 import java.time.LocalDate
-import java.util.UUID
+import scala.concurrent.{ExecutionContext, Future}
 
-object TestConstants {
+@Singleton
+class GetTemporaryReferenceService @Inject()(trnApiConnector: GetTemporaryReferenceConnector)(implicit ec: ExecutionContext) {
 
-  val testJourneyId: String = UUID.randomUUID().toString
-  val testInternalId: String = UUID.randomUUID().toString
-  val testSafeId: String = UUID.randomUUID().toString
-  val testNino: String = "AA111111A"
-  val testSautr: String = "1234567890"
-
-  val testDateOfBirth: LocalDate = LocalDate.of(2021,8,13)
-  val testFullName: FullName = FullName("fore","sur")
-  val testAddress: Address = Address("abc","def","GB")
-
+  def getTemporaryReference(dateOfBirth: LocalDate, fullName: FullName, address: Address)(implicit hc: HeaderCarrier): Future[String] = {
+    trnApiConnector.getTrn(dateOfBirth, fullName, address)
+    }
 
 }

@@ -14,25 +14,13 @@
  * limitations under the License.
  */
 
-package assets
+package uk.gov.hmrc.soletraderidentification.models
 
+import play.api.libs.json.{Json, OFormat}
 
-import uk.gov.hmrc.soletraderidentification.models.{Address, FullName}
+case class Address(line1: String, line2: String, countryCode: String)
 
-import java.time.LocalDate
-import java.util.UUID
-
-object TestConstants {
-
-  val testJourneyId: String = UUID.randomUUID().toString
-  val testInternalId: String = UUID.randomUUID().toString
-  val testSafeId: String = UUID.randomUUID().toString
-  val testNino: String = "AA111111A"
-  val testSautr: String = "1234567890"
-
-  val testDateOfBirth: LocalDate = LocalDate.of(2021,8,13)
-  val testFullName: FullName = FullName("fore","sur")
-  val testAddress: Address = Address("abc","def","GB")
-
-
+object Address {
+  implicit val format: OFormat[Address] = Json.format[Address]
 }
+
