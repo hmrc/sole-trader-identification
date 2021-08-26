@@ -38,7 +38,7 @@ trait RegisterWithMultipleIdentifiersStub extends WireMockMethods {
       "reason" -> "Request has not passed validation. Invalid Payload."
     )
 
-  def stubRegisterWithMultipleIdentifiersSuccess(nino: String, sautr: String)(status: Int, safeId: String): StubMapping = {
+  def stubRegisterWithNinoSuccess(nino: String, sautr: String)(status: Int, safeId: String): StubMapping = {
     val postBody = Json.obj("soleTrader" ->
       Json.obj("nino" -> nino,
         "sautr" -> sautr
@@ -51,9 +51,34 @@ trait RegisterWithMultipleIdentifiersStub extends WireMockMethods {
       )
   }
 
-  def stubRegisterWithMultipleIdentifiersFailure(nino: String, sautr: String)(status: Int): StubMapping = {
+  def stubRegisterWithNinoFailure(nino: String, sautr: String)(status: Int): StubMapping = {
     val postBody = Json.obj("soleTrader" ->
       Json.obj("nino" -> nino,
+        "sautr" -> sautr
+      ))
+    when(method = POST, uri = "/cross-regime/register/VATC", postBody)
+      .thenReturn(
+        status = status,
+        body = registerResponseFailureBody()
+      )
+  }
+
+  def stubRegisterWithTrnSuccess(trn: String, sautr: String)(status: Int, safeId: String): StubMapping = {
+    val postBody = Json.obj("soleTrader" ->
+      Json.obj("tempNI" -> trn,
+        "sautr" -> sautr
+      )
+    )
+    when(method = POST, uri = "/cross-regime/register/VATC", postBody)
+      .thenReturn(
+        status = status,
+        body = registerResponseSuccessBody(safeId)
+      )
+  }
+
+  def stubRegisterWithTrnFailure(trn: String, sautr: String)(status: Int): StubMapping = {
+    val postBody = Json.obj("soleTrader" ->
+      Json.obj("tempNI" -> trn,
         "sautr" -> sautr
       ))
     when(method = POST, uri = "/cross-regime/register/VATC", postBody)

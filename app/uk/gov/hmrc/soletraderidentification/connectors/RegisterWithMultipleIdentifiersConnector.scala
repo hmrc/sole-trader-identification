@@ -29,8 +29,8 @@ class RegisterWithMultipleIdentifiersConnector @Inject()(http: HttpClient,
                                                          appConfig: AppConfig
                                                         )(implicit ec: ExecutionContext) {
 
-  def register(nino: String,
-               sautr: String
+  def registerWithNino(nino: String,
+                       sautr: String
               )(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] = {
 
     val extraHeaders = Seq(
@@ -44,6 +44,39 @@ class RegisterWithMultipleIdentifiersConnector @Inject()(http: HttpClient,
         "soleTrader" ->
           Json.obj(
             "nino" -> nino,
+            "sautr" -> sautr
+          )
+      )
+
+    http.POST[JsObject, RegisterWithMultipleIdentifiersResult](
+      url = appConfig.getRegisterWithMultipleIdentifiersUrl,
+      headers = extraHeaders,
+      body = jsonBody
+    )(
+      implicitly[Writes[JsObject]],
+      RegisterWithMultipleIdentifiersHttpReads,
+      hc,
+      ec
+    )
+
+  }
+
+
+  def registerWithTrn(trn: String,
+                      sautr: String
+                     )(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] = {
+
+    val extraHeaders = Seq(
+      "Authorization" -> appConfig.desAuthorisationToken,
+      appConfig.desEnvironmentHeader,
+      "Content-Type" -> "application/json"
+    )
+
+    val jsonBody: JsObject =
+      Json.obj(
+        "soleTrader" ->
+          Json.obj(
+            "tempNI" -> trn,
             "sautr" -> sautr
           )
       )

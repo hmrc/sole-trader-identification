@@ -26,7 +26,10 @@ import scala.concurrent.Future
 @Singleton
 class RegisterWithMultipleIdentifiersService @Inject()(registerWithMultipleIdentifiersConnector: RegisterWithMultipleIdentifiersConnector) {
 
-  def register(nino: String, sautr: String)(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] =
-    registerWithMultipleIdentifiersConnector.register(nino, sautr)
+  def registerWithNino(nino: String, sautr: String)(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] =
+    registerWithMultipleIdentifiersConnector.registerWithNino(nino, sautr)
+
+  def registerWithTrn(trn: String, sautr: String)(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] =
+    registerWithMultipleIdentifiersConnector.registerWithTrn(trn, sautr)
 
 }
