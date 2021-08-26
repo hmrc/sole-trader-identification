@@ -16,7 +16,7 @@
 
 package connectors
 
-import assets.TestConstants.{testNino, testSafeId, testSautr}
+import assets.TestConstants._
 import play.api.test.Helpers._
 import stubs.{AuthStub, RegisterWithMultipleIdentifiersStub}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -37,8 +37,8 @@ class RegisterWithMultipleIdentifiersConnectorISpec extends ComponentSpecHelper 
         "the Registration was a success on the Register API" in {
           disable(DesStub)
 
-          stubRegisterWithMultipleIdentifiersSuccess(testNino, testSautr)(OK, testSafeId)
-          val result = connector.register(testNino, testSautr)
+          stubRegisterWithNinoSuccess(testNino, testSautr)(OK, testSafeId)
+          val result = connector.registerWithNino(testNino, testSautr)
           await(result) mustBe (RegisterWithMultipleIdentifiersSuccess(testSafeId))
         }
       }
@@ -48,9 +48,31 @@ class RegisterWithMultipleIdentifiersConnectorISpec extends ComponentSpecHelper 
         "the Registration was a success on the Register API stub" in {
           enable(DesStub)
 
-          stubRegisterWithMultipleIdentifiersSuccess(testNino, testSautr)(OK, testSafeId)
-          val result = connector.register(testNino, testSautr)
+          stubRegisterWithNinoSuccess(testNino, testSautr)(OK, testSafeId)
+          val result = connector.registerWithNino(testNino, testSautr)
           await(result) mustBe (RegisterWithMultipleIdentifiersSuccess(testSafeId))
+        }
+      }
+    }
+    s"the $DesStub feature switch is disabled" when {
+      "return OK with status Registered and the SafeId" when {
+        "the Registration was a success on the Register API with TRN" in {
+          disable(DesStub)
+
+          stubRegisterWithTrnSuccess(testTrn, testSautr)(OK, testSafeId)
+          val result = connector.registerWithTrn(testTrn, testSautr)
+          await(result) mustBe RegisterWithMultipleIdentifiersSuccess(testSafeId)
+        }
+      }
+    }
+    s"the $DesStub feature switch is enabled" when {
+      "return OK with status Registered and the SafeId" when {
+        "the Registration was a success on the Register API with TRN" in {
+          enable(DesStub)
+
+          stubRegisterWithTrnSuccess(testTrn, testSautr)(OK, testSafeId)
+          val result = connector.registerWithTrn(testTrn, testSautr)
+          await(result) mustBe RegisterWithMultipleIdentifiersSuccess(testSafeId)
         }
       }
     }

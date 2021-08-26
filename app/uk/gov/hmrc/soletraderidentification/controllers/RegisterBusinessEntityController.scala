@@ -16,14 +16,14 @@
 
 package uk.gov.hmrc.soletraderidentification.controllers
 
-import javax.inject.{Inject, Singleton}
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.Json
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-import uk.gov.hmrc.soletraderidentification.connectors.RegisterWithMultipleIdentifiersHttpParser.{RegisterWithMultipleIdentifiersFailure, RegisterWithMultipleIdentifiersSuccess}
+import uk.gov.hmrc.soletraderidentification.connectors.RegisterWithMultipleIdentifiersHttpParser._
 import uk.gov.hmrc.soletraderidentification.services.RegisterWithMultipleIdentifiersService
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
@@ -32,12 +32,14 @@ class RegisterBusinessEntityController @Inject()(cc: ControllerComponents,
                                                  val authConnector: AuthConnector
                                                 )(implicit ec: ExecutionContext) extends BackendController(cc) with AuthorisedFunctions {
 
-  def register(): Action[JsValue] = Action.async(parse.json) {
+  def registerWithNino(): Action[(String, String)] = Action.async(parse.json[(String, String)](json => for {
+    nino <- (json \ "soleTrader" \ "nino").validate[String]
+    sautr <- (json \ "soleTrader" \ "sautr").validate[String]
+  } yield (nino, sautr))) {
     implicit request =>
       authorised() {
-        val nino = (request.body \ "soleTrader" \ "nino").as[String]
-        val sautr = (request.body \ "soleTrader" \ "sautr").as[String]
-        registerWithMultipleIdentifiersService.register(nino, sautr).map {
+        val (nino, sautr) = request.body
+        registerWithMultipleIdentifiersService.registerWithNino(nino, sautr).map {
           case RegisterWithMultipleIdentifiersSuccess(safeId) =>
             Ok(Json.obj(
               "registration" -> Json.obj(
@@ -46,11 +48,31 @@ class RegisterBusinessEntityController @Inject()(cc: ControllerComponents,
           case RegisterWithMultipleIdentifiersFailure(status, body) =>
             Ok(Json.obj(
               "registration" -> Json.obj(
-                "registrationStatus" -> "REGISTRATION_FAILED")))
-
+                "registrationStatus" -> "REGISTRATION_FAILED")
+            ))
         }
-
       }
+  }
 
+  def registerWithTrn(): Action[(String, String)] = Action.async(parse.json[(String, String)](json => for {
+    nino <- (json \ "trn").validate[String]
+    sautr <- (json \ "sautr").validate[String]
+  } yield (nino, sautr))) {
+    implicit request =>
+      authorised() {
+        val (trn, sautr) = request.body
+        registerWithMultipleIdentifiersService.registerWithTrn(trn, sautr).map {
+          case RegisterWithMultipleIdentifiersSuccess(safeId) =>
+            Ok(Json.obj(
+              "registration" -> Json.obj(
+                "registrationStatus" -> "REGISTERED",
+                "registeredBusinessPartnerId" -> safeId)))
+          case RegisterWithMultipleIdentifiersFailure(_, _) =>
+            Ok(Json.obj(
+              "registration" -> Json.obj(
+                "registrationStatus" -> "REGISTRATION_FAILED")
+            ))
+        }
+      }
   }
 }

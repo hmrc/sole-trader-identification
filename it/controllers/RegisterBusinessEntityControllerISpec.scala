@@ -16,7 +16,8 @@
 
 package controllers
 
-import assets.TestConstants.{testInternalId, testNino, testSafeId, testSautr}
+import assets.TestConstants.{testInternalId, testNino, testSafeId, testSautr, testTrn}
+
 import javax.inject.Singleton
 import play.api.libs.json.Json
 import play.api.test.Helpers._
@@ -30,7 +31,7 @@ class RegisterBusinessEntityControllerISpec extends ComponentSpecHelper with Aut
     "return OK with status Registered and the SafeId" when {
       "the Registration was a success" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubRegisterWithMultipleIdentifiersSuccess(testNino, testSautr)(OK, testSafeId)
+        stubRegisterWithNinoSuccess(testNino, testSautr)(OK, testSafeId)
 
         val jsonBody = Json.obj(
           "soleTrader" -> Json.obj(
@@ -52,7 +53,7 @@ class RegisterBusinessEntityControllerISpec extends ComponentSpecHelper with Aut
     "return INTERNAL_SERVER_ERROR with status Registration_Failed" when {
       "the Registration was not successful" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubRegisterWithMultipleIdentifiersFailure(testNino, testSautr)(BAD_REQUEST)
+        stubRegisterWithNinoFailure(testNino, testSautr)(BAD_REQUEST)
 
         val jsonBody = Json.obj(
           "soleTrader" -> Json.obj(
@@ -67,5 +68,42 @@ class RegisterBusinessEntityControllerISpec extends ComponentSpecHelper with Aut
       }
     }
   }
+  "POST /register-trn" should {
+    "return OK with status Registered and the SafeId" when {
+      "the Registration was a success" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRegisterWithTrnSuccess(testTrn, testSautr)(OK, testSafeId)
 
+        val jsonBody = Json.obj(
+          "trn" -> testTrn,
+          "sautr" -> testSautr
+        )
+
+        val resultJson = Json.obj(
+          "registration" -> Json.obj(
+            "registrationStatus" -> "REGISTERED",
+            "registeredBusinessPartnerId" -> testSafeId)
+        )
+
+        val result = post("/register-trn")(jsonBody)
+        result.status mustBe OK
+        result.json mustBe resultJson
+      }
+    }
+    "return INTERNAL_SERVER_ERROR with status Registration_Failed" when {
+      "the Registration was not successful" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRegisterWithTrnFailure(testTrn, testSautr)(BAD_REQUEST)
+
+        val jsonBody = Json.obj(
+          "trn" -> testTrn,
+          "sautr" -> testSautr
+        )
+
+        val result = post("/register-trn")(jsonBody)
+        result.status mustBe INTERNAL_SERVER_ERROR
+
+      }
+    }
+  }
 }
