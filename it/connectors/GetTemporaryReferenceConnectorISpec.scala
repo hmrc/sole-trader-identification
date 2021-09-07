@@ -34,10 +34,10 @@ class GetTemporaryReferenceConnectorISpec extends ComponentSpecHelper with AuthS
   private implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
   "getTrn" when {
-    s"the $TrnStub feature switch is disabled" should {
+    s"the $TrnStub feature switch is enabled" should {
       "return status Created with the TRN" when {
-        "the call to the api was sucessful" in {
-          disable(TrnStub)
+        "the call to the api was successful" in {
+          enable(TrnStub)
 
           stubGetTrn(testDateOfBirth, testFullName, testAddress)(CREATED, Json.obj(
             "temporaryReferenceNumber" -> "99A99999"))
@@ -46,28 +46,26 @@ class GetTemporaryReferenceConnectorISpec extends ComponentSpecHelper with AuthS
         }
       }
     }
-    s"the $TrnStub feature switch is enabled" should {
+    s"the $TrnStub feature switch is disabled" should {
       "return status Created with the TRN" when {
-        "the call to the api was sucessful" in {
-          enable(TrnStub)
+        "the call to the api was successful" in {
+          disable(TrnStub)
 
           stubGetTrn(testDateOfBirth, testFullName, testAddress)(CREATED, Json.obj(
             "temporaryReferenceNumber" -> "99A99999"))
           val result = connector.getTrn(testDateOfBirth, testFullName, testAddress)
-          await(result) mustBe ("99A99999")
+          await(result) mustBe "99A99999"
         }
       }
       "throw an internal server exception" when {
         "the call to the api returns invalid json" in {
-          enable(TrnStub)
+          disable(TrnStub)
 
           stubGetTrn(testDateOfBirth, testFullName, testAddress)(CREATED)
           intercept[InternalServerException](await(connector.getTrn(testDateOfBirth, testFullName, testAddress)))
         }
-      }
-      "throw an internal server exception" when {
         "the call to the api returns a Bad Request" in {
-          enable(TrnStub)
+          disable(TrnStub)
 
           stubGetTrn(testDateOfBirth, testFullName, testAddress)(BAD_REQUEST)
           intercept[InternalServerException](await(connector.getTrn(testDateOfBirth, testFullName, testAddress)))
