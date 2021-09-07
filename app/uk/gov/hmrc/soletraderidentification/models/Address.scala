@@ -18,7 +18,14 @@ package uk.gov.hmrc.soletraderidentification.models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class Address(line1: String, line2: String, countryCode: String)
+case class Address(line1: String,
+                   line2: String,
+                   line3: Option[String],
+                   line4: Option[String],
+                   line5: Option[String],
+                   postCode: String,
+                   countryCode: String
+                  )
 
 object Address {
   implicit val format: OFormat[Address] = Json.format[Address]
