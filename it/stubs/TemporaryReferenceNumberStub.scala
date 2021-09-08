@@ -33,7 +33,10 @@ trait TemporaryReferenceNumberStub extends WireMockMethods {
     val jsonBody: JsObject =
       Json.obj(
         "birthDate" -> birthDate,
-        "fullName" -> Json.toJson(fullName),
+        "name" -> Json.obj(
+          "forename" -> fullName.firstName,
+          "surname" -> fullName.lastName
+        ),
         "address" -> Json.toJson(address)
       )
     when(method = POST, uri = s"/individuals/trn", body = jsonBody, headers = iFHeaders)

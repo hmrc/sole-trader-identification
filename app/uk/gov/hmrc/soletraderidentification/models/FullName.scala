@@ -18,7 +18,7 @@ package uk.gov.hmrc.soletraderidentification.models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class FullName(forename: String, surname: String)
+case class FullName(firstName: String, lastName: String)
 
 object FullName {
   implicit val format: OFormat[FullName] = Json.format[FullName]

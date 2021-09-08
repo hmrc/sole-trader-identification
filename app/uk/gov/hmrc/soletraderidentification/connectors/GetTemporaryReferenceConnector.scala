@@ -45,7 +45,10 @@ class GetTemporaryReferenceConnector @Inject()(http: HttpClient,
     val jsonBody: JsObject =
       Json.obj(
         "birthDate" -> dateOfBirth,
-        "fullName" -> Json.toJson(fullName),
+        "name" -> Json.obj(
+          "forename" -> fullName.firstName,
+          "surname" -> fullName.lastName
+        ),
         "address" -> Json.toJson(address)
       )
 
@@ -53,8 +56,7 @@ class GetTemporaryReferenceConnector @Inject()(http: HttpClient,
       url = appConfig.getTemporaryReferenceNumberUrl,
       body = jsonBody,
       headers = extraHeaders
-    )(
-      implicitly[Writes[JsObject]],
+    )(implicitly[Writes[JsObject]],
       TrnHttpReads,
       hc,
       ec
