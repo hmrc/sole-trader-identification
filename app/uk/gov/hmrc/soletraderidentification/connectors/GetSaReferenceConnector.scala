@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.soletraderidentification.connectors
 
-import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import uk.gov.hmrc.soletraderidentification.config.AppConfig
 import uk.gov.hmrc.soletraderidentification.httpparsers.GetSaReferenceHttpParser.GetSaReferenceHttpReads
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -31,7 +31,7 @@ class GetSaReferenceConnector @Inject()(http: HttpClient,
   def getSaReference(nino: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
     val extraHeaders = Seq(
       "Authorization" -> appConfig.desAuthorisationToken,
-      appConfig.desEnvironmentHeader
+      "Environment" -> appConfig.desEnvironment
     )
 
     http.GET[Option[String]](appConfig.getSaReferenceUrl(nino), headers = extraHeaders)

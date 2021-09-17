@@ -17,4 +17,4 @@ POST          /register                           uk.gov.hmrc.soletraderidentifi
 
 POST          /register-trn                       uk.gov.hmrc.soletraderidentification.controllers.RegisterBusinessEntityController.registerWithTrn()
 
-POST          /get-trn                            uk.gov.hmrc.soletraderidentification.controllers.GetTemporaryReferenceController.getTrn()
+POST          /get-trn                            uk.gov.hmrc.soletraderidentification.controllers.CreateTemporaryReferenceNumberController.createTemporaryReferenceNumber()

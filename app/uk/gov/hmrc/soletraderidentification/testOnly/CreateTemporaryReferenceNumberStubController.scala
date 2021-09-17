@@ -23,9 +23,9 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class GetTemporaryReferenceNumberStubController @Inject()(controllerComponents: ControllerComponents) extends BackendController(controllerComponents) {
+class CreateTemporaryReferenceNumberStubController @Inject()(controllerComponents: ControllerComponents) extends BackendController(controllerComponents) {
 
-  val getTrn: Action[AnyContent] = Action {
+  val createTemporaryReferenceNumber: Action[AnyContent] = Action {
     val stubbedTrn: String = "99A99999"
 
     Created(Json.obj("temporaryReferenceNumber" -> stubbedTrn))

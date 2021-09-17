@@ -17,18 +17,21 @@
 package uk.gov.hmrc.soletraderidentification.services
 
 
-import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.soletraderidentification.connectors.GetTemporaryReferenceConnector
+import uk.gov.hmrc.soletraderidentification.connectors.CreateTemporaryReferenceNumberConnector
 import uk.gov.hmrc.soletraderidentification.models.{Address, FullName}
+
 import java.time.LocalDate
-import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.Future
 
 @Singleton
-class GetTemporaryReferenceService @Inject()(trnApiConnector: GetTemporaryReferenceConnector)(implicit ec: ExecutionContext) {
+class CreateTemporaryReferenceNumberService @Inject()(createTemporaryReferenceConnector: CreateTemporaryReferenceNumberConnector) {
 
-  def getTemporaryReference(dateOfBirth: LocalDate, fullName: FullName, address: Address)(implicit hc: HeaderCarrier): Future[String] = {
-    trnApiConnector.getTrn(dateOfBirth, fullName, address)
-    }
+  def createTemporaryReferenceNumber(dateOfBirth: LocalDate,
+                                     fullName: FullName,
+                                     address: Address
+                                    )(implicit hc: HeaderCarrier): Future[String] =
+    createTemporaryReferenceConnector.createTemporaryReferenceNumber(dateOfBirth, fullName, address)
 
 }

@@ -19,7 +19,7 @@ package uk.gov.hmrc.soletraderidentification.config
 import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.soletraderidentification.featureswitch.core.config.{DesStub,TrnStub, FeatureSwitching, StubGetSaReference}
+import uk.gov.hmrc.soletraderidentification.featureswitch.core.config.{DesStub,CreateTrnStub, FeatureSwitching, StubGetSaReference}
 
 @Singleton
 class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig) extends FeatureSwitching {
@@ -39,11 +39,8 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
     s"$baseUrl/cross-regime/register/VATC"
   }
 
-  lazy val integrationFrameworkEnvironmentHeader: String = servicesConfig.getString("microservice.services.integration-framework.environment")
-  lazy val integrationFrameworkAuthorizationHeader: String = s"Bearer ${servicesConfig.getString("microservice.services.integration-framework.authorization-token")}"
-
-  def getTemporaryReferenceNumberUrl: String = {
-    val baseUrl = if (isEnabled(TrnStub)) integrationFrameworkStubBaseUrl else integrationFrameworkBaseUrl
+  def createTemporaryReferenceNumberUrl: String = {
+    val baseUrl = if (isEnabled(CreateTrnStub)) integrationFrameworkStubBaseUrl else integrationFrameworkBaseUrl
     s"$baseUrl/individuals/trn"
   }
 
@@ -51,13 +48,27 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
 
   lazy val desStubBaseUrl: String = servicesConfig.getString("microservice.services.des.stub-url")
 
-  lazy val integrationFrameworkBaseUrl: String = servicesConfig.getString("microservice.services.integration-framework.url")
+  lazy val integrationFrameworkBaseUrl: String =
+    servicesConfig.getString("microservice.services.integration-framework.url")
 
-  lazy val integrationFrameworkStubBaseUrl: String = servicesConfig.getString("microservice.services.integration-framework.stub-url")
+  lazy val integrationFrameworkStubBaseUrl: String =
+    servicesConfig.getString("microservice.services.integration-framework.stub-url")
 
-  lazy val desAuthorisationToken: String = s"Bearer ${servicesConfig.getString("microservice.services.des.authorisation-token")}"
+  lazy val desAuthorisationToken: String =
+    s"Bearer ${servicesConfig.getString("microservice.services.des.authorisation-token")}"
 
-  lazy val desEnvironmentHeader: (String, String) = "Environment" -> servicesConfig.getString("microservice.services.des.environment")
+  lazy val desEnvironment: String =
+    servicesConfig.getString("microservice.services.des.environment")
+
+  lazy val integrationFrameworkEnvironment: String =
+    servicesConfig.getString("microservice.services.integration-framework.environment")
+
+  lazy val integrationFrameworkOriginatorId: String =
+    servicesConfig.getString("microservice.services.integration-framework.originator-id")
+
+  lazy val integrationFrameworkAuthorizationToken: String =
+    s"Bearer ${servicesConfig.getString("microservice.services.integration-framework.authorization-token")}"
+
 
   val timeToLiveSeconds: Int = servicesConfig.getInt("mongodb.timeToLiveSeconds")
 }
