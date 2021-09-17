@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.soletraderidentification.config
 
-import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.soletraderidentification.featureswitch.core.config.{DesStub,CreateTrnStub, FeatureSwitching, StubGetSaReference}
+import uk.gov.hmrc.soletraderidentification.featureswitch.core.config.{CreateTrnStub, DesStub, FeatureSwitching, StubGetSaReference}
+
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig) extends FeatureSwitching {
@@ -30,7 +31,7 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
   val graphiteHost: String = config.get[String]("microservice.metrics.graphite.host")
 
   def getSaReferenceUrl(nino: String): String = {
-    val baseUrl = if (isEnabled(StubGetSaReference)) desStubBaseUrl else  desBaseUrl
+    val baseUrl = if (isEnabled(StubGetSaReference)) desStubBaseUrl else desBaseUrl
     s"$baseUrl/corporation-tax/identifiers/nino/$nino"
   }
 

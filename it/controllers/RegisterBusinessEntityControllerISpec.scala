@@ -16,13 +16,13 @@
 
 package controllers
 
-import assets.TestConstants.{testInternalId, testNino, testSafeId, testSautr, testTrn}
-
-import javax.inject.Singleton
+import assets.TestConstants._
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import stubs.{AuthStub, RegisterWithMultipleIdentifiersStub}
 import utils.ComponentSpecHelper
+
+import javax.inject.Singleton
 
 @Singleton
 class RegisterBusinessEntityControllerISpec extends ComponentSpecHelper with AuthStub with RegisterWithMultipleIdentifiersStub {

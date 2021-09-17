@@ -33,9 +33,9 @@ class CreateTemporaryReferenceNumberControllerISpec extends ComponentSpecHelper 
 
         val jsonBody = Json.obj(
           "dateOfBirth" -> testDateOfBirth,
-            "fullName" -> testFullName,
-            "address" -> testAddress
-          )
+          "fullName" -> testFullName,
+          "address" -> testAddress
+        )
 
         val resultJson = Json.obj("temporaryReferenceNumber" -> "99A99999")
 

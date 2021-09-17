@@ -16,10 +16,11 @@
 
 package uk.gov.hmrc.soletraderidentification.testOnly
 
-import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
+
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class GetSaReferenceStubController @Inject()(controllerComponents: ControllerComponents) extends BackendController(controllerComponents) {

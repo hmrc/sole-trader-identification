@@ -19,11 +19,12 @@ package repositories
 import assets.TestConstants.{testInternalId, testJourneyId}
 import play.api.libs.json.{JsString, Json}
 import play.api.test.Helpers._
+import reactivemongo.play.json.JsObjectDocumentWriter
 import uk.gov.hmrc.soletraderidentification.models.JourneyDataModel
 import uk.gov.hmrc.soletraderidentification.repositories.JourneyDataRepository
 import uk.gov.hmrc.soletraderidentification.repositories.JourneyDataRepository._
 import utils.ComponentSpecHelper
-import reactivemongo.play.json.JsObjectDocumentWriter
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class JourneyDataRepositoryISpec extends ComponentSpecHelper {

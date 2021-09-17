@@ -22,7 +22,7 @@ import play.api.test.Helpers._
 import stubs.{AuthStub, CreateTemporaryReferenceNumberStub}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.soletraderidentification.connectors.CreateTemporaryReferenceNumberConnector
-import uk.gov.hmrc.soletraderidentification.featureswitch.core.config.{FeatureSwitching, CreateTrnStub}
+import uk.gov.hmrc.soletraderidentification.featureswitch.core.config.{CreateTrnStub, FeatureSwitching}
 import utils.ComponentSpecHelper
 
 import scala.concurrent.Future

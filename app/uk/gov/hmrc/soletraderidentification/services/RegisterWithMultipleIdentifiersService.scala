@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.soletraderidentification.services
 
-import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.soletraderidentification.connectors.RegisterWithMultipleIdentifiersConnector
 import uk.gov.hmrc.soletraderidentification.connectors.RegisterWithMultipleIdentifiersHttpParser.RegisterWithMultipleIdentifiersResult
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
 @Singleton

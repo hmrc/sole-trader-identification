@@ -17,11 +17,11 @@
 package uk.gov.hmrc.soletraderidentification.connectors
 
 import play.api.http.Status._
-import play.api.libs.json.{JsError, JsObject, JsSuccess, Json, Writes}
+import play.api.libs.json._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse, InternalServerException}
 import uk.gov.hmrc.soletraderidentification.config.AppConfig
-import uk.gov.hmrc.soletraderidentification.models.{Address, FullName}
 import uk.gov.hmrc.soletraderidentification.connectors.CreateTemporaryReferenceHttpParser._
+import uk.gov.hmrc.soletraderidentification.models.{Address, FullName}
 
 import java.time.LocalDate
 import javax.inject.{Inject, Singleton}

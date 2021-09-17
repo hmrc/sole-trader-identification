@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.soletraderidentification.services
 
-import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.soletraderidentification.connectors.GetSaReferenceConnector
 import uk.gov.hmrc.soletraderidentification.models.{DetailsMatched, DetailsMismatched, DetailsNotFound, SoleTraderDetailsValidationResult}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton

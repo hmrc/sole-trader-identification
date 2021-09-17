@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.soletraderidentification.controllers
 
-import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
@@ -24,13 +23,14 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.soletraderidentification.models.{DetailsMatched, DetailsMismatched, DetailsNotFound, SoleTraderDetailsModel}
 import uk.gov.hmrc.soletraderidentification.services.ValidateSoleTraderDetailsService
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
 class ValidateSoleTraderDetailsController @Inject()(cc: ControllerComponents,
                                                     validateIncorporatedEntityDetailsService: ValidateSoleTraderDetailsService,
                                                     val authConnector: AuthConnector
-                                                           )(implicit ec: ExecutionContext) extends BackendController(cc) with AuthorisedFunctions {
+                                                   )(implicit ec: ExecutionContext) extends BackendController(cc) with AuthorisedFunctions {
 
   def validateDetails(): Action[SoleTraderDetailsModel] = Action.async(parse.json[SoleTraderDetailsModel]) {
     implicit request =>
