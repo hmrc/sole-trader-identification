@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.soletraderidentification.models
 
-import play.api.libs.json.{JsObject, JsResult, JsValue, Json, OFormat}
+import play.api.libs.json._
 
 case class JourneyDataModel(journeyId: String)
 

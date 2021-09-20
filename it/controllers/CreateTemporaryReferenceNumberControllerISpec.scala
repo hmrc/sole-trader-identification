@@ -20,27 +20,27 @@ import assets.TestConstants._
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import stubs.{AuthStub, TemporaryReferenceNumberStub}
+import stubs.{AuthStub, CreateTemporaryReferenceNumberStub}
 import utils.ComponentSpecHelper
 
-class GetTemporaryReferenceControllerISpec extends ComponentSpecHelper with AuthStub with TemporaryReferenceNumberStub {
+class CreateTemporaryReferenceNumberControllerISpec extends ComponentSpecHelper with AuthStub with CreateTemporaryReferenceNumberStub {
 
   "POST /individuals/trn" should {
     "return 201 created with a trn" when {
       "a TRN was successfully created" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubGetTrn(testDateOfBirth, testFullName, testAddress)(CREATED, Json.obj("temporaryReferenceNumber" -> "99A99999"))
+        stubCreateTemporaryReferenceNumber(testDateOfBirth, testFullName, testAddress)(CREATED, Json.obj("temporaryReferenceNumber" -> "99A99999"))
 
         val jsonBody = Json.obj(
           "dateOfBirth" -> testDateOfBirth,
-            "fullName" -> testFullName,
-            "address" -> testAddress
-          )
+          "fullName" -> testFullName,
+          "address" -> testAddress
+        )
 
-        val resultJson = Json.obj(
-            "temporaryReferenceNumber" -> "99A99999")
+        val resultJson = Json.obj("temporaryReferenceNumber" -> "99A99999")
 
         val result: WSResponse = post("/get-trn")(jsonBody)
+
         result.status mustBe CREATED
         result.json mustBe resultJson
       }

@@ -31,8 +31,8 @@ object TestConstants {
   val testSautr: String = "1234567890"
   val testTrn: String = "1234567890"
 
-  val testDateOfBirth: LocalDate = LocalDate.of(2021,8,13)
-  val testFullName: FullName = FullName("fore","sur")
+  val testDateOfBirth: LocalDate = LocalDate.of(2021, 8, 13)
+  val testFullName: FullName = FullName("fore", "sur")
   val testAddress: Address = Address("line1", "line2", Some("line3"), Some("line4"), Some("line5"), Some("AA11 11A"), "GB")
 
 

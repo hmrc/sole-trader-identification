@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.soletraderidentification.featureswitch.api.controllers
 
-import javax.inject.{Inject, Singleton}
 import play.api.Configuration
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, InjectedController}
 import uk.gov.hmrc.soletraderidentification.featureswitch.api.services.FeatureSwitchService
 import uk.gov.hmrc.soletraderidentification.featureswitch.core.config.FeatureSwitching
 import uk.gov.hmrc.soletraderidentification.featureswitch.core.models.FeatureSwitchSetting
+
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class FeatureSwitchApiController @Inject()(config: Configuration,

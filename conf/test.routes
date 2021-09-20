@@ -6,4 +6,4 @@ POST       /api/feature-switches                                        uk.gov.h
 
 POST       /cross-regime/register/VATC                                  uk.gov.hmrc.soletraderidentification.testOnly.RegisterWithMultipleIdentifiersStubController.registerWithMultipleIdentifiers
 
-POST       /individuals/trn                                             uk.gov.hmrc.soletraderidentification.testOnly.GetTemporaryReferenceNumberStubController.getTrn
+POST       /individuals/trn                                             uk.gov.hmrc.soletraderidentification.testOnly.CreateTemporaryReferenceNumberStubController.createTemporaryReferenceNumber

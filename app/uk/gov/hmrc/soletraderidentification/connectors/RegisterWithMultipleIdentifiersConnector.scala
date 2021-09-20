@@ -16,13 +16,13 @@
 
 package uk.gov.hmrc.soletraderidentification.connectors
 
-import javax.inject.Inject
 import play.api.http.Status.OK
-import play.api.libs.json.{JsError, JsObject, JsSuccess, Json, Writes}
+import play.api.libs.json._
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.soletraderidentification.config.AppConfig
-import RegisterWithMultipleIdentifiersHttpParser.{RegisterWithMultipleIdentifiersHttpReads, RegisterWithMultipleIdentifiersResult}
+import uk.gov.hmrc.soletraderidentification.connectors.RegisterWithMultipleIdentifiersHttpParser._
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class RegisterWithMultipleIdentifiersConnector @Inject()(http: HttpClient,
@@ -31,11 +31,11 @@ class RegisterWithMultipleIdentifiersConnector @Inject()(http: HttpClient,
 
   def registerWithNino(nino: String,
                        sautr: String
-              )(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] = {
+                      )(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] = {
 
     val extraHeaders = Seq(
       "Authorization" -> appConfig.desAuthorisationToken,
-      appConfig.desEnvironmentHeader,
+      "Environment" -> appConfig.desEnvironment,
       "Content-Type" -> "application/json"
     )
 
@@ -68,7 +68,7 @@ class RegisterWithMultipleIdentifiersConnector @Inject()(http: HttpClient,
 
     val extraHeaders = Seq(
       "Authorization" -> appConfig.desAuthorisationToken,
-      appConfig.desEnvironmentHeader,
+      "Environment" -> appConfig.desEnvironment,
       "Content-Type" -> "application/json"
     )
 
@@ -85,11 +85,6 @@ class RegisterWithMultipleIdentifiersConnector @Inject()(http: HttpClient,
       url = appConfig.getRegisterWithMultipleIdentifiersUrl,
       headers = extraHeaders,
       body = jsonBody
-    )(
-      implicitly[Writes[JsObject]],
-      RegisterWithMultipleIdentifiersHttpReads,
-      hc,
-      ec
     )
 
   }
@@ -124,12 +119,10 @@ object RegisterWithMultipleIdentifiersHttpParser {
     }
   }
 
-
   sealed trait RegisterWithMultipleIdentifiersResult
 
   case class RegisterWithMultipleIdentifiersSuccess(safeId: String) extends RegisterWithMultipleIdentifiersResult
 
   case class RegisterWithMultipleIdentifiersFailure(status: Int, body: String) extends RegisterWithMultipleIdentifiersResult
-
 
 }

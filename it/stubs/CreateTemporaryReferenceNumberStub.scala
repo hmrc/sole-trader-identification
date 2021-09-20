@@ -23,13 +23,20 @@ import utils.WireMockMethods
 
 import java.time.LocalDate
 
-trait TemporaryReferenceNumberStub extends WireMockMethods {
+trait CreateTemporaryReferenceNumberStub extends WireMockMethods {
+
   private val iFHeaders = Map(
     "Authorization" -> "Bearer dev",
-    "Environment" -> "dev"
+    "Environment" -> "dev",
+    "OriginatorId" -> "dev"
   )
 
-  def stubGetTrn(birthDate: LocalDate, fullName: FullName, address: Address)(status: Int, body: JsValue = Json.obj()): StubMapping = {
+  def stubCreateTemporaryReferenceNumber(birthDate: LocalDate,
+                                         fullName: FullName,
+                                         address: Address
+                                        )(status: Int,
+                                          body: JsValue = Json.obj()): StubMapping = {
+
     val jsonBody: JsObject =
       Json.obj(
         "birthDate" -> birthDate,
@@ -39,7 +46,9 @@ trait TemporaryReferenceNumberStub extends WireMockMethods {
         ),
         "address" -> Json.toJson(address)
       )
+
     when(method = POST, uri = s"/individuals/trn", body = jsonBody, headers = iFHeaders)
       .thenReturn(status, body)
+
   }
 }

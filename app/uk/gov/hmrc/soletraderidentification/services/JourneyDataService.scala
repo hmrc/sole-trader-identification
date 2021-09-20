@@ -26,7 +26,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class JourneyDataService @Inject()(journeyDataRepository: JourneyDataRepository,
                                    journeyIdGenerationService: JourneyIdGenerationService
-                                  )(implicit ec: ExecutionContext){
+                                  )(implicit ec: ExecutionContext) {
 
 
   def createJourney(authInternalId: String): Future[String] = {
