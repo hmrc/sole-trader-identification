@@ -35,9 +35,9 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
     s"$baseUrl/corporation-tax/identifiers/nino/$nino"
   }
 
-  def getRegisterWithMultipleIdentifiersUrl: String = {
+  def getRegisterWithMultipleIdentifiersUrl(regime: String): String = {
     val baseUrl = if (isEnabled(DesStub)) desStubBaseUrl else desBaseUrl
-    s"$baseUrl/cross-regime/register/VATC"
+    s"$baseUrl/cross-regime/register/GRS?grsRegime=$regime"
   }
 
   def createTemporaryReferenceNumberUrl: String = {

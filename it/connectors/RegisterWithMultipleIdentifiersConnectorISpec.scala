@@ -37,8 +37,8 @@ class RegisterWithMultipleIdentifiersConnectorISpec extends ComponentSpecHelper 
         "the Registration was a success on the Register API" in {
           disable(DesStub)
 
-          stubRegisterWithNinoSuccess(testNino, testSautr)(OK, testSafeId)
-          val result = connector.registerWithNino(testNino, testSautr)
+          stubRegisterWithNinoSuccess(testNino, testSautr, testRegime)(OK, testSafeId)
+          val result = connector.registerWithNino(testNino, testSautr, testRegime)
           await(result) mustBe (RegisterWithMultipleIdentifiersSuccess(testSafeId))
         }
       }
@@ -48,8 +48,8 @@ class RegisterWithMultipleIdentifiersConnectorISpec extends ComponentSpecHelper 
         "the Registration was a success on the Register API stub" in {
           enable(DesStub)
 
-          stubRegisterWithNinoSuccess(testNino, testSautr)(OK, testSafeId)
-          val result = connector.registerWithNino(testNino, testSautr)
+          stubRegisterWithNinoSuccess(testNino, testSautr, testRegime)(OK, testSafeId)
+          val result = connector.registerWithNino(testNino, testSautr, testRegime)
           await(result) mustBe (RegisterWithMultipleIdentifiersSuccess(testSafeId))
         }
       }
@@ -59,8 +59,8 @@ class RegisterWithMultipleIdentifiersConnectorISpec extends ComponentSpecHelper 
         "the Registration was a success on the Register API with TRN" in {
           disable(DesStub)
 
-          stubRegisterWithTrnSuccess(testTrn, testSautr)(OK, testSafeId)
-          val result = connector.registerWithTrn(testTrn, testSautr)
+          stubRegisterWithTrnSuccess(testTrn, testSautr, testRegime)(OK, testSafeId)
+          val result = connector.registerWithTrn(testTrn, testSautr, testRegime)
           await(result) mustBe RegisterWithMultipleIdentifiersSuccess(testSafeId)
         }
       }
@@ -70,8 +70,8 @@ class RegisterWithMultipleIdentifiersConnectorISpec extends ComponentSpecHelper 
         "the Registration was a success on the Register API with TRN" in {
           enable(DesStub)
 
-          stubRegisterWithTrnSuccess(testTrn, testSautr)(OK, testSafeId)
-          val result = connector.registerWithTrn(testTrn, testSautr)
+          stubRegisterWithTrnSuccess(testTrn, testSautr, testRegime)(OK, testSafeId)
+          val result = connector.registerWithTrn(testTrn, testSautr, testRegime)
           await(result) mustBe RegisterWithMultipleIdentifiersSuccess(testSafeId)
         }
       }

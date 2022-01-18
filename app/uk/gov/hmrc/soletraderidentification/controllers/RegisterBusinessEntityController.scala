@@ -32,14 +32,15 @@ class RegisterBusinessEntityController @Inject()(cc: ControllerComponents,
                                                  val authConnector: AuthConnector
                                                 )(implicit ec: ExecutionContext) extends BackendController(cc) with AuthorisedFunctions {
 
-  def registerWithNino(): Action[(String, String)] = Action.async(parse.json[(String, String)](json => for {
+  def registerWithNino(): Action[(String, String, String)] = Action.async(parse.json[(String, String, String)](json => for {
     nino <- (json \ "soleTrader" \ "nino").validate[String]
     sautr <- (json \ "soleTrader" \ "sautr").validate[String]
-  } yield (nino, sautr))) {
+    regime <- (json \ "soleTrader" \ "regime").validate[String]
+  } yield (nino, sautr, regime))) {
     implicit request =>
       authorised() {
-        val (nino, sautr) = request.body
-        registerWithMultipleIdentifiersService.registerWithNino(nino, sautr).map {
+        val (nino, sautr, regime) = request.body
+        registerWithMultipleIdentifiersService.registerWithNino(nino, sautr, regime).map {
           case RegisterWithMultipleIdentifiersSuccess(safeId) =>
             Ok(Json.obj(
               "registration" -> Json.obj(
@@ -54,14 +55,15 @@ class RegisterBusinessEntityController @Inject()(cc: ControllerComponents,
       }
   }
 
-  def registerWithTrn(): Action[(String, String)] = Action.async(parse.json[(String, String)](json => for {
+  def registerWithTrn(): Action[(String, String, String)] = Action.async(parse.json[(String, String, String)](json => for {
     nino <- (json \ "trn").validate[String]
     sautr <- (json \ "sautr").validate[String]
-  } yield (nino, sautr))) {
+    regime <- (json \ "regime").validate[String]
+  } yield (nino, sautr, regime))) {
     implicit request =>
       authorised() {
-        val (trn, sautr) = request.body
-        registerWithMultipleIdentifiersService.registerWithTrn(trn, sautr).map {
+        val (trn, sautr, regime) = request.body
+        registerWithMultipleIdentifiersService.registerWithTrn(trn, sautr, regime).map {
           case RegisterWithMultipleIdentifiersSuccess(safeId) =>
             Ok(Json.obj(
               "registration" -> Json.obj(

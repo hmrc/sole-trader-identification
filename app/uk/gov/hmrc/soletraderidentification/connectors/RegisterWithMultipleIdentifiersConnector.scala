@@ -30,7 +30,8 @@ class RegisterWithMultipleIdentifiersConnector @Inject()(http: HttpClient,
                                                         )(implicit ec: ExecutionContext) {
 
   def registerWithNino(nino: String,
-                       sautr: String
+                       sautr: String,
+                       regime: String
                       )(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] = {
 
     val extraHeaders = Seq(
@@ -49,7 +50,7 @@ class RegisterWithMultipleIdentifiersConnector @Inject()(http: HttpClient,
       )
 
     http.POST[JsObject, RegisterWithMultipleIdentifiersResult](
-      url = appConfig.getRegisterWithMultipleIdentifiersUrl,
+      url = appConfig.getRegisterWithMultipleIdentifiersUrl(regime),
       headers = extraHeaders,
       body = jsonBody
     )(
@@ -63,7 +64,8 @@ class RegisterWithMultipleIdentifiersConnector @Inject()(http: HttpClient,
 
 
   def registerWithTrn(trn: String,
-                      sautr: String
+                      sautr: String,
+                      regime: String
                      )(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] = {
 
     val extraHeaders = Seq(
@@ -82,7 +84,7 @@ class RegisterWithMultipleIdentifiersConnector @Inject()(http: HttpClient,
       )
 
     http.POST[JsObject, RegisterWithMultipleIdentifiersResult](
-      url = appConfig.getRegisterWithMultipleIdentifiersUrl,
+      url = appConfig.getRegisterWithMultipleIdentifiersUrl(regime),
       headers = extraHeaders,
       body = jsonBody
     )

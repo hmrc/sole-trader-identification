@@ -29,7 +29,8 @@ object TestConstants {
   val testSafeId: String = UUID.randomUUID().toString
   val testNino: String = "AA111111A"
   val testSautr: String = "1234567890"
-  val testTrn: String = "1234567890"
+  val testTrn: String = "1234567891"
+  val testRegime: String = "VATC"
 
   val testDateOfBirth: LocalDate = LocalDate.of(2021, 8, 13)
   val testFullName: FullName = FullName("fore", "sur")

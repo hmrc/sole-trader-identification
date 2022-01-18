@@ -111,11 +111,11 @@ Example request body:
 | ```OK(200)```                           |  ```OK```
 | ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```
 
-#### POST /validate-details 
+#### POST /validate-details
 
 ---
 Checks if the user entered identifiers match what is held in the database.
-This endpoint is feature switched using the `Use stub for Get SA Reference` switch, which returns a specific SAUTR based on the NINO. 
+This endpoint is feature switched using the `Use stub for Get SA Reference` switch, which returns a specific SAUTR based on the NINO.
 
 ##### Request:
 Example Body:
@@ -154,11 +154,15 @@ Body:
 ```
 {
 "soleTrader": {
-            "nino": AA111111A,
-            "sautr": 1234567890
+            "nino": "AA111111A",
+            "sautr": 1234567890,
+            "regime": "VATC"
            }
 }
 ```
+
+The property "regime" is used to define the associated GRS regime. Current valid values
+are VATC and PPT.
 
 ##### Response:
 
@@ -205,7 +209,7 @@ Example request URI:
 | ```NO_CONTENT(204)```                   |  ```Field successfully deleted from database```
 | ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```
 
-#### POST /test-only/cross-regime/register/:identifier   
+#### POST /test-only/cross-regime/register/GRS
 
 ---
 Stub for downstream Register API
@@ -216,7 +220,7 @@ No body is required for this request as this always returns a successful respons
 ##### Response:
 Status: **OK(200)**
 
-Example Response body: 
+Example Response body:
 
 ```
 {

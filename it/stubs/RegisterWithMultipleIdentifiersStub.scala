@@ -38,50 +38,50 @@ trait RegisterWithMultipleIdentifiersStub extends WireMockMethods {
       "reason" -> "Request has not passed validation. Invalid Payload."
     )
 
-  def stubRegisterWithNinoSuccess(nino: String, sautr: String)(status: Int, safeId: String): StubMapping = {
+  def stubRegisterWithNinoSuccess(nino: String, sautr: String, regime: String)(status: Int, safeId: String): StubMapping = {
     val postBody = Json.obj("soleTrader" ->
       Json.obj("nino" -> nino,
         "sautr" -> sautr
       )
     )
-    when(method = POST, uri = "/cross-regime/register/VATC", postBody)
+    when(method = POST, uri = s"/cross-regime/register/GRS\\?grsRegime=$regime", postBody)
       .thenReturn(
         status = status,
         body = registerResponseSuccessBody(safeId)
       )
   }
 
-  def stubRegisterWithNinoFailure(nino: String, sautr: String)(status: Int): StubMapping = {
+  def stubRegisterWithNinoFailure(nino: String, sautr: String, regime: String)(status: Int): StubMapping = {
     val postBody = Json.obj("soleTrader" ->
       Json.obj("nino" -> nino,
         "sautr" -> sautr
       ))
-    when(method = POST, uri = "/cross-regime/register/VATC", postBody)
+    when(method = POST, uri = s"/cross-regime/register/GRS\\?grsRegime=$regime", postBody)
       .thenReturn(
         status = status,
         body = registerResponseFailureBody()
       )
   }
 
-  def stubRegisterWithTrnSuccess(trn: String, sautr: String)(status: Int, safeId: String): StubMapping = {
+  def stubRegisterWithTrnSuccess(trn: String, sautr: String, regime: String)(status: Int, safeId: String): StubMapping = {
     val postBody = Json.obj("soleTrader" ->
       Json.obj("tempNI" -> trn,
         "sautr" -> sautr
       )
     )
-    when(method = POST, uri = "/cross-regime/register/VATC", postBody)
+    when(method = POST, uri = s"/cross-regime/register/GRS\\?grsRegime=$regime", postBody)
       .thenReturn(
         status = status,
         body = registerResponseSuccessBody(safeId)
       )
   }
 
-  def stubRegisterWithTrnFailure(trn: String, sautr: String)(status: Int): StubMapping = {
+  def stubRegisterWithTrnFailure(trn: String, sautr: String, regime: String)(status: Int): StubMapping = {
     val postBody = Json.obj("soleTrader" ->
       Json.obj("tempNI" -> trn,
         "sautr" -> sautr
       ))
-    when(method = POST, uri = "/cross-regime/register/VATC", postBody)
+    when(method = POST, uri = s"/cross-regime/register/GRS\\?grsRegime=$regime", postBody)
       .thenReturn(
         status = status,
         body = registerResponseFailureBody()
