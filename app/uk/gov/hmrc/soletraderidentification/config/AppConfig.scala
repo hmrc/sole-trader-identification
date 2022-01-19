@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,9 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
     s"$baseUrl/corporation-tax/identifiers/nino/$nino"
   }
 
-  def getRegisterWithMultipleIdentifiersUrl: String = {
+  def getRegisterWithMultipleIdentifiersUrl(regime: String): String = {
     val baseUrl = if (isEnabled(DesStub)) desStubBaseUrl else desBaseUrl
-    s"$baseUrl/cross-regime/register/VATC"
+    s"$baseUrl/cross-regime/register/GRS?grsRegime=$regime"
   }
 
   def createTemporaryReferenceNumberUrl: String = {

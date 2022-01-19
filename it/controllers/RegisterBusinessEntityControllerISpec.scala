@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,12 +31,13 @@ class RegisterBusinessEntityControllerISpec extends ComponentSpecHelper with Aut
     "return OK with status Registered and the SafeId" when {
       "the Registration was a success" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubRegisterWithNinoSuccess(testNino, testSautr)(OK, testSafeId)
+        stubRegisterWithNinoSuccess(testNino, testSautr, testRegime)(OK, testSafeId)
 
         val jsonBody = Json.obj(
           "soleTrader" -> Json.obj(
             "nino" -> testNino,
-            "sautr" -> testSautr
+            "sautr" -> testSautr,
+            "regime" -> testRegime
           )
         )
 
@@ -53,12 +54,13 @@ class RegisterBusinessEntityControllerISpec extends ComponentSpecHelper with Aut
     "return INTERNAL_SERVER_ERROR with status Registration_Failed" when {
       "the Registration was not successful" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubRegisterWithNinoFailure(testNino, testSautr)(BAD_REQUEST)
+        stubRegisterWithNinoFailure(testNino, testSautr, testRegime)(BAD_REQUEST)
 
         val jsonBody = Json.obj(
           "soleTrader" -> Json.obj(
             "nino" -> testNino,
-            "sautr" -> testSautr
+            "sautr" -> testSautr,
+            "regime" -> testRegime
           )
         )
 
@@ -72,11 +74,12 @@ class RegisterBusinessEntityControllerISpec extends ComponentSpecHelper with Aut
     "return OK with status Registered and the SafeId" when {
       "the Registration was a success" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubRegisterWithTrnSuccess(testTrn, testSautr)(OK, testSafeId)
+        stubRegisterWithTrnSuccess(testTrn, testSautr, testRegime)(OK, testSafeId)
 
         val jsonBody = Json.obj(
           "trn" -> testTrn,
-          "sautr" -> testSautr
+          "sautr" -> testSautr,
+          "regime" -> testRegime
         )
 
         val resultJson = Json.obj(
@@ -93,11 +96,12 @@ class RegisterBusinessEntityControllerISpec extends ComponentSpecHelper with Aut
     "return INTERNAL_SERVER_ERROR with status Registration_Failed" when {
       "the Registration was not successful" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubRegisterWithTrnFailure(testTrn, testSautr)(BAD_REQUEST)
+        stubRegisterWithTrnFailure(testTrn, testSautr, testRegime)(BAD_REQUEST)
 
         val jsonBody = Json.obj(
           "trn" -> testTrn,
-          "sautr" -> testSautr
+          "sautr" -> testSautr,
+          "regime" -> testRegime
         )
 
         val result = post("/register-trn")(jsonBody)

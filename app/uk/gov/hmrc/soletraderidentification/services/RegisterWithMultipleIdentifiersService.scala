@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,10 @@ import scala.concurrent.Future
 @Singleton
 class RegisterWithMultipleIdentifiersService @Inject()(registerWithMultipleIdentifiersConnector: RegisterWithMultipleIdentifiersConnector) {
 
-  def registerWithNino(nino: String, sautr: String)(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] =
-    registerWithMultipleIdentifiersConnector.registerWithNino(nino, sautr)
+  def registerWithNino(nino: String, sautr: String, regime: String)(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] =
+    registerWithMultipleIdentifiersConnector.registerWithNino(nino, sautr, regime)
 
-  def registerWithTrn(trn: String, sautr: String)(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] =
-    registerWithMultipleIdentifiersConnector.registerWithTrn(trn, sautr)
+  def registerWithTrn(trn: String, sautr: String, regime: String)(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] =
+    registerWithMultipleIdentifiersConnector.registerWithTrn(trn, sautr, regime)
 
 }
