@@ -32,15 +32,15 @@ class RegisterBusinessEntityController @Inject()(cc: ControllerComponents,
                                                  val authConnector: AuthConnector
                                                 )(implicit ec: ExecutionContext) extends BackendController(cc) with AuthorisedFunctions {
 
-  def registerWithNino(): Action[(String, String, String)] = Action.async(parse.json[(String, String, String)](json => for {
+  def registerWithNino(): Action[(String, Option[String], String)] = Action.async(parse.json[(String, Option[String], String)](json => for {
     nino <- (json \ "soleTrader" \ "nino").validate[String]
-    sautr <- (json \ "soleTrader" \ "sautr").validate[String]
+    sautr <- (json \ "soleTrader" \ "sautr").validateOpt[String]
     regime <- (json \ "soleTrader" \ "regime").validate[String]
   } yield (nino, sautr, regime))) {
     implicit request =>
       authorised() {
-        val (nino, sautr, regime) = request.body
-        registerWithMultipleIdentifiersService.registerWithNino(nino, sautr, regime).map {
+        val (nino, optSautr, regime) = request.body
+        registerWithMultipleIdentifiersService.registerWithNino(nino, optSautr, regime).map {
           case RegisterWithMultipleIdentifiersSuccess(safeId) =>
             Ok(Json.obj(
               "registration" -> Json.obj(
