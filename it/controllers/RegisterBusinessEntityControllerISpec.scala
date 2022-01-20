@@ -29,7 +29,7 @@ class RegisterBusinessEntityControllerISpec extends ComponentSpecHelper with Aut
 
   "POST /register" should {
     "return OK with status Registered and the SafeId" when {
-      "the Registration was a success" in {
+      "the Registration was a success with a NINO and SAUTR" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubRegisterWithNinoSuccess(testNino, testSautr, testRegime)(OK, testSafeId)
 
@@ -37,6 +37,26 @@ class RegisterBusinessEntityControllerISpec extends ComponentSpecHelper with Aut
           "soleTrader" -> Json.obj(
             "nino" -> testNino,
             "sautr" -> testSautr,
+            "regime" -> testRegime
+          )
+        )
+
+        val resultJson = Json.obj(
+          "registration" -> Json.obj(
+            "registrationStatus" -> "REGISTERED",
+            "registeredBusinessPartnerId" -> testSafeId))
+
+        val result = post("/register")(jsonBody)
+        result.status mustBe OK
+        result.json mustBe resultJson
+      }
+      "the Registration was a success with a NINO but no SAUTR" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRegisterWithNinoNoSautrSuccess(testNino, testRegime)(OK, testSafeId)
+
+        val jsonBody = Json.obj(
+          "soleTrader" -> Json.obj(
+            "nino" -> testNino,
             "regime" -> testRegime
           )
         )

@@ -34,22 +34,44 @@ class RegisterWithMultipleIdentifiersConnectorISpec extends ComponentSpecHelper 
   "registerWithMultipleIdentifiers" when {
     s"the $DesStub feature switch is disabled" when {
       "return OK with status Registered and the SafeId" when {
-        "the Registration was a success on the Register API" in {
+        "the Registration was a success on the Register API with a NINO and SAUTR" in {
           disable(DesStub)
 
           stubRegisterWithNinoSuccess(testNino, testSautr, testRegime)(OK, testSafeId)
-          val result = connector.registerWithNino(testNino, testSautr, testRegime)
+          val result = connector.registerWithNino(testNino, Some(testSautr), testRegime)
           await(result) mustBe (RegisterWithMultipleIdentifiersSuccess(testSafeId))
         }
       }
     }
     s"the $DesStub feature switch is enabled" when {
       "return OK with status Registered and the SafeId" when {
-        "the Registration was a success on the Register API stub" in {
+        "the Registration was a success on the Register API stub with a NINO and SAUTR" in {
           enable(DesStub)
 
           stubRegisterWithNinoSuccess(testNino, testSautr, testRegime)(OK, testSafeId)
-          val result = connector.registerWithNino(testNino, testSautr, testRegime)
+          val result = connector.registerWithNino(testNino, Some(testSautr), testRegime)
+          await(result) mustBe (RegisterWithMultipleIdentifiersSuccess(testSafeId))
+        }
+      }
+    }
+    s"the $DesStub feature switch is disabled" when {
+      "return OK with status Registered and the SafeId" when {
+        "the Registration was a success on the Register API with a NINO but no SAUTR" in {
+          disable(DesStub)
+
+          stubRegisterWithNinoNoSautrSuccess(testNino, testRegime)(OK, testSafeId)
+          val result = connector.registerWithNino(testNino, None, testRegime)
+          await(result) mustBe (RegisterWithMultipleIdentifiersSuccess(testSafeId))
+        }
+      }
+    }
+    s"the $DesStub feature switch is enabled" when {
+      "return OK with status Registered and the SafeId" when {
+        "the Registration was a success on the Register API stub with a NINO but no SAUTR" in {
+          enable(DesStub)
+
+          stubRegisterWithNinoNoSautrSuccess(testNino, testRegime)(OK, testSafeId)
+          val result = connector.registerWithNino(testNino, None, testRegime)
           await(result) mustBe (RegisterWithMultipleIdentifiersSuccess(testSafeId))
         }
       }

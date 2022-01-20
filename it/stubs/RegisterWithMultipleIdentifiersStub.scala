@@ -51,6 +51,19 @@ trait RegisterWithMultipleIdentifiersStub extends WireMockMethods {
       )
   }
 
+  def stubRegisterWithNinoNoSautrSuccess(nino: String, regime: String)(status: Int, safeId: String): StubMapping = {
+    val postBody = Json.obj("soleTrader" ->
+      Json.obj(
+        "nino" -> nino
+      )
+    )
+    when(method = POST, uri = s"/cross-regime/register/GRS\\?grsRegime=$regime", postBody)
+      .thenReturn(
+        status = status,
+        body = registerResponseSuccessBody(safeId)
+      )
+  }
+
   def stubRegisterWithNinoFailure(nino: String, sautr: String, regime: String)(status: Int): StubMapping = {
     val postBody = Json.obj("soleTrader" ->
       Json.obj("nino" -> nino,
