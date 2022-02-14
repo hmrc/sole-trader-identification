@@ -16,25 +16,32 @@
 
 package uk.gov.hmrc.soletraderidentification.testOnly
 
-import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.{Action, ControllerComponents}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.{Inject, Singleton}
+import scala.concurrent.Future
 
 @Singleton
 class RegisterWithMultipleIdentifiersStubController @Inject()(controllerComponents: ControllerComponents) extends BackendController(controllerComponents) {
 
-  val registerWithMultipleIdentifiers: Action[AnyContent] = Action {
-    val stubbedSafeId = "X00000123456789"
+  val registerWithMultipleIdentifiers: Action[JsValue] = Action.async(parse.json) {
+    implicit request =>
+      val nino: String = (request.body \\ "nino").map(_.as[String]).head
 
-    Ok(Json.obj(
-      "identification" -> Json.arr(
-        Json.obj(
-          "idType" -> "SAFEID",
-          "idValue" -> stubbedSafeId
-        )
-      )
-    ))
+      val stubbedSafeId = nino match {
+        case "ZT790941B" => "XH0000100382440" // PPT Testing
+        case "ST497186D" => "XY0000100382439" // PPT Testing
+        case _ => "X00000123456789"
+      }
+
+      Future.successful(Ok(Json.obj(
+        "identification" -> Json.arr(
+          Json.obj(
+            "idType" -> "SAFEID",
+            "idValue" -> stubbedSafeId
+          )
+        ))))
   }
 }
