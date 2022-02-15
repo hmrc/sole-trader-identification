@@ -28,11 +28,11 @@ class RegisterWithMultipleIdentifiersStubController @Inject()(controllerComponen
 
   val registerWithMultipleIdentifiers: Action[JsValue] = Action.async(parse.json) {
     implicit request =>
-      val nino: String = (request.body \\ "nino").map(_.as[String]).head
+      val nino: Option[String] = (request.body \ "soleTrader" \ "nino").asOpt[String]
 
       val stubbedSafeId = nino match {
-        case "ZT790941B" => "XH0000100382440" // PPT Testing
-        case "ST497186D" => "XY0000100382439" // PPT Testing
+        case Some("ZT790941B") => "XH0000100382440" // PPT Testing
+        case Some("ST497186D") => "XY0000100382439" // PPT Testing
         case _ => "X00000123456789"
       }
 
