@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.soletraderidentification.repositories
 
+import play.api.Logger
 import play.api.libs.json._
 import play.modules.reactivemongo.ReactiveMongoComponent
 import reactivemongo.api.commands.UpdateWriteResult
@@ -123,6 +124,17 @@ class JourneyDataRepository @Inject()(reactiveMongoComponent: ReactiveMongoCompo
       setIndex()
       r
     }
+
+  def runOnce = {
+    collection.count(
+      Some(Json.obj(CreationTimestampKey -> Json.obj("$exists" -> false))),
+      0,
+      0,
+      None
+    )
+  }
+
+  runOnce.map(count => logger.warn("Number of documents that have no creation timestamp: " + count))
 }
 
 object JourneyDataRepository {
