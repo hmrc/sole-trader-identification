@@ -46,7 +46,7 @@ class JourneyDataRepository @Inject()(reactiveMongoComponent: ReactiveMongoCompo
       Json.obj(
         JourneyIdKey -> journeyId,
         AuthInternalIdKey -> authInternalId,
-        "creationTimestamp" -> Json.obj("$date" -> Instant.now.toEpochMilli)
+        CreationTimestampKey -> Json.obj("$date" -> Instant.now.toEpochMilli)
       )
     ).map(_ => journeyId)
 
@@ -95,13 +95,14 @@ class JourneyDataRepository @Inject()(reactiveMongoComponent: ReactiveMongoCompo
       ),
       Json.obj(
         JourneyIdKey -> journeyId,
-        AuthInternalIdKey -> authInternalId
+        AuthInternalIdKey -> authInternalId,
+        CreationTimestampKey -> Json.obj("$date" -> Instant.now.toEpochMilli)
       ),
       upsert = false,
       multi = false
     ).filter(_.n == 1)
 
-  private val TtlIndexName = "ClaimVatEnrolmentDataExpires"
+  private val TtlIndexName = "SoleTraderDataExpires"
 
   private lazy val ttlIndex = Index(
     Seq(("creationTimestamp", IndexType.Ascending)),
@@ -127,6 +128,7 @@ class JourneyDataRepository @Inject()(reactiveMongoComponent: ReactiveMongoCompo
 object JourneyDataRepository {
   val JourneyIdKey: String = "_id"
   val AuthInternalIdKey: String = "authInternalId"
+  val CreationTimestampKey: String = "creationTimestamp"
 }
 
 

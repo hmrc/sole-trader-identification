@@ -62,7 +62,6 @@ class RegisterWithMultipleIdentifiersConnector @Inject()(http: HttpClient,
 
   }
 
-
   def registerWithTrn(trn: String,
                       sautr: String,
                       regime: String
