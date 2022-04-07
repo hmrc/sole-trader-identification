@@ -16,10 +16,9 @@
 
 package uk.gov.hmrc.soletraderidentification.repositories
 
-import play.api.Logger
 import play.api.libs.json._
 import play.modules.reactivemongo.ReactiveMongoComponent
-import reactivemongo.api.commands.UpdateWriteResult
+import reactivemongo.api.commands.{MultiBulkWriteResult, UpdateWriteResult}
 import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.bson.BSONDocument
 import reactivemongo.play.json.JsObjectDocumentWriter
@@ -117,15 +116,13 @@ class JourneyDataRepository @Inject()(reactiveMongoComponent: ReactiveMongoCompo
     }
   }
 
-  setIndex()
-
   override def drop(implicit ec: ExecutionContext): Future[Boolean] =
     collection.drop(failIfNotFound = false).map { r =>
       setIndex()
       r
     }
 
-  def runOnce = {
+  def countNumberOfEntriesWithoutCreationTimestamp: Future[Int] = {
     collection.count(
       Some(Json.obj(CreationTimestampKey -> Json.obj("$exists" -> false))),
       0,
@@ -134,7 +131,34 @@ class JourneyDataRepository @Inject()(reactiveMongoComponent: ReactiveMongoCompo
     )
   }
 
-  runOnce.map(count => logger.warn("Number of documents that have no creation timestamp: " + count))
+  def addCreationTimestampFieldIfMissing(): Future[MultiBulkWriteResult] = {
+    import reactivemongo.play.json.ImplicitBSONHandlers._
+
+    val updateBuilder = collection.update(ordered = true)
+
+    val theUpdatedToBeExecuted: Future[collection.UpdateCommand.UpdateElement] = updateBuilder.element(
+      q = BSONDocument(CreationTimestampKey -> BSONDocument("$exists" -> false)),
+      u = BSONDocument(
+        "$set" -> BSONDocument(CreationTimestampKey -> BSONDocument("$date" -> Instant.now.toEpochMilli))
+      ),
+      multi = true
+    )
+
+    theUpdatedToBeExecuted.flatMap(theUpdatedToBeExecuted => updateBuilder.many(Iterable(theUpdatedToBeExecuted)))
+  }
+
+  setIndex()
+
+  for {
+    count <- countNumberOfEntriesWithoutCreationTimestamp
+    _ <- Future.successful(logger.warn("[SoleTraderMongoQuery] - Number of documents that have no creation timestamp: " + count))
+    result <- addCreationTimestampFieldIfMissing()
+    _ <- Future.successful(logger.warn(s"[SoleTraderMongoQuery] - AddCreationTimestampFieldIfMissing result is $result"))
+    newCount <- countNumberOfEntriesWithoutCreationTimestamp
+    _ <- Future.successful(logger.warn("[SoleTraderMongoQuery] - Number of documents that have no creation timestamp: " + newCount))
+  }yield
+    ()
+
 }
 
 object JourneyDataRepository {
