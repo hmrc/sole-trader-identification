@@ -105,7 +105,7 @@ class JourneyDataRepository @Inject()(reactiveMongoComponent: ReactiveMongoCompo
   private val TtlIndexName = "SoleTraderDataExpires"
 
   private lazy val ttlIndex = Index(
-    Seq(("creationTimestamp", IndexType.Ascending)),
+    key = Seq((CreationTimestampKey, IndexType.Ascending)),
     name = Some(TtlIndexName),
     options = BSONDocument("expireAfterSeconds" -> appConfig.timeToLiveSeconds)
   )
@@ -122,42 +122,7 @@ class JourneyDataRepository @Inject()(reactiveMongoComponent: ReactiveMongoCompo
       r
     }
 
-  def countNumberOfEntriesWithoutCreationTimestamp: Future[Int] = {
-    collection.count(
-      Some(Json.obj(CreationTimestampKey -> Json.obj("$exists" -> false))),
-      0,
-      0,
-      None
-    )
-  }
-
-  def addCreationTimestampFieldIfMissing(): Future[MultiBulkWriteResult] = {
-    import reactivemongo.play.json.ImplicitBSONHandlers._
-
-    val updateBuilder = collection.update(ordered = true)
-
-    val theUpdatedToBeExecuted: Future[collection.UpdateCommand.UpdateElement] = updateBuilder.element(
-      q = BSONDocument(CreationTimestampKey -> BSONDocument("$exists" -> false)),
-      u = BSONDocument(
-        "$set" -> BSONDocument(CreationTimestampKey -> BSONDocument("$date" -> Instant.now.toEpochMilli))
-      ),
-      multi = true
-    )
-
-    theUpdatedToBeExecuted.flatMap(theUpdatedToBeExecuted => updateBuilder.many(Iterable(theUpdatedToBeExecuted)))
-  }
-
   setIndex()
-
-  for {
-    count <- countNumberOfEntriesWithoutCreationTimestamp
-    _ <- Future.successful(logger.warn("[SoleTraderMongoQuery] - Number of documents that have no creation timestamp: " + count))
-    result <- addCreationTimestampFieldIfMissing()
-    _ <- Future.successful(logger.warn(s"[SoleTraderMongoQuery] - AddCreationTimestampFieldIfMissing result is $result"))
-    newCount <- countNumberOfEntriesWithoutCreationTimestamp
-    _ <- Future.successful(logger.warn("[SoleTraderMongoQuery] - Number of documents that have no creation timestamp: " + newCount))
-  }yield
-    ()
 
 }
 
