@@ -17,7 +17,7 @@
 package repositories
 
 import assets.TestConstants.{testInternalId, testJourneyId}
-import play.api.libs.json.{JsObject, JsString, Json}
+import play.api.libs.json.{JsString, Json}
 import play.api.test.Helpers._
 import reactivemongo.play.json.JsObjectDocumentWriter
 import uk.gov.hmrc.soletraderidentification.models.JourneyDataModel

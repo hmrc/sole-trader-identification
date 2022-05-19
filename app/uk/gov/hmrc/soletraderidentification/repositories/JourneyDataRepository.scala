@@ -18,7 +18,7 @@ package uk.gov.hmrc.soletraderidentification.repositories
 
 import play.api.libs.json._
 import play.modules.reactivemongo.ReactiveMongoComponent
-import reactivemongo.api.commands.{MultiBulkWriteResult, UpdateWriteResult}
+import reactivemongo.api.commands.UpdateWriteResult
 import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.bson.BSONDocument
 import reactivemongo.play.json.JsObjectDocumentWriter
