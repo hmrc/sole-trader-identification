@@ -37,7 +37,6 @@ class FraudulentNinoCheckerControllerPerformanceISpec extends ComponentSpecHelpe
           val result = get("/fraudulent-nino-info/IamAFraudulentNino")
 
           result.json mustBe Json.obj("isAFraudulentNino" -> true)
-
         })
       }
 
