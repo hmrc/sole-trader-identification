@@ -16,16 +16,14 @@
 
 package uk.gov.hmrc.soletraderidentification.config
 
-import org.apache.commons.io.IOUtils
-import play.api.{Configuration, Environment}
+import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import uk.gov.hmrc.soletraderidentification.featureswitch.core.config.{CreateTrnStub, DesStub, FeatureSwitching, StubGetSaReference}
 
 import javax.inject.{Inject, Singleton}
-import scala.io.Source
 
 @Singleton
-class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig, environment: Environment) extends FeatureSwitching {
+class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig) extends FeatureSwitching {
 
   val authBaseUrl: String = servicesConfig.baseUrl("auth")
 
@@ -73,19 +71,5 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig,
     s"Bearer ${servicesConfig.getString("microservice.services.integration-framework.authorization-token")}"
 
   val timeToLiveSeconds: Int = servicesConfig.getInt("mongodb.timeToLiveSeconds")
-
-  def readFraudulentNinosFile: Set[String] = {
-    val configurationKey = "sole-trader-identification.fraudulent-ninos-file-name"
-    environment.resourceAsStream(config.get[String](configurationKey)) match {
-      case Some(underneathInputStream) =>
-        try {
-          Source.fromInputStream(underneathInputStream).getLines().toSet
-        } finally {
-          IOUtils.close(underneathInputStream)
-        }
-      case None =>
-        throw new IllegalArgumentException(s"Not file found using configuration key $configurationKey")
-    }
-  }
 
 }
