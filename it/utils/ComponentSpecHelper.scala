@@ -52,9 +52,7 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
     "microservice.services.des.stub-url" -> mockUrl,
     "microservice.services.des.url" -> mockUrl,
     "microservice.services.integration-framework.stub-url" -> mockUrl,
-    "microservice.services.integration-framework.url" -> mockUrl,
-    "sole-trader-identification.fraudulent-ninos-file-name" -> "test-only-fraudulent-ninos-1-nino-per-line-53649-lines.txt"
-  )
+    "microservice.services.integration-framework.url" -> mockUrl)
 
   implicit val ws: WSClient = app.injector.instanceOf[WSClient]
 
