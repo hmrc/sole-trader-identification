@@ -21,7 +21,7 @@ import play.api.test.Helpers._
 import stubs.{AuthStub, RegisterWithMultipleIdentifiersStub}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.soletraderidentification.connectors.RegisterWithMultipleIdentifiersConnector
-import uk.gov.hmrc.soletraderidentification.connectors.RegisterWithMultipleIdentifiersHttpParser.RegisterWithMultipleIdentifiersSuccess
+import uk.gov.hmrc.soletraderidentification.connectors.RegisterWithMultipleIdentifiersHttpParser.{Failures, RegisterWithMultipleIdentifiersFailure, RegisterWithMultipleIdentifiersSuccess}
 import uk.gov.hmrc.soletraderidentification.featureswitch.core.config.{DesStub, FeatureSwitching}
 import utils.ComponentSpecHelper
 
@@ -53,7 +53,23 @@ class RegisterWithMultipleIdentifiersConnectorISpec extends ComponentSpecHelper 
           await(result) mustBe (RegisterWithMultipleIdentifiersSuccess(testSafeId))
         }
       }
+      "return a failure with the response failure body" when {
+        "the Registration  has failed on the Register API stub with a NINO and SAUTR" in {
+          enable(DesStub)
+
+          stubRegisterWithNinoFailure(testNino, testSautr, testRegime)(BAD_REQUEST)
+          val result = connector.registerWithNino(testNino, Some(testSautr), testRegime)
+
+          await(result) match {
+            case RegisterWithMultipleIdentifiersFailure(status, failures) =>
+              status mustBe BAD_REQUEST
+              failures.head mustBe Failures(testCode, testReason)
+            case _ => fail("test returned an invalid registration result")
+          }
+        }
+      }
     }
+
     s"the $DesStub feature switch is disabled" when {
       "return OK with status Registered and the SafeId" when {
         "the Registration was a success on the Register API with a NINO but no SAUTR" in {
@@ -75,7 +91,23 @@ class RegisterWithMultipleIdentifiersConnectorISpec extends ComponentSpecHelper 
           await(result) mustBe (RegisterWithMultipleIdentifiersSuccess(testSafeId))
         }
       }
+      "return a failure with the response failure body" when {
+        "the Registration has failed on the Register API stub with a NINO but no SAUTR" in {
+          enable(DesStub)
+
+          stubRegisterWithNinoNoSautrFailure(testNino, testRegime)(BAD_REQUEST)
+          val result = connector.registerWithNino(testNino, None, testRegime)
+
+          await(result) match {
+            case RegisterWithMultipleIdentifiersFailure(status, failures) =>
+              status mustBe BAD_REQUEST
+              failures.head mustBe Failures(testCode, testReason)
+            case _ => fail("test returned an invalid registration result")
+          }
+        }
+      }
     }
+
     s"the $DesStub feature switch is disabled" when {
       "return OK with status Registered and the SafeId" when {
         "the Registration was a success on the Register API with TRN" in {
@@ -95,6 +127,22 @@ class RegisterWithMultipleIdentifiersConnectorISpec extends ComponentSpecHelper 
           stubRegisterWithTrnSuccess(testTrn, testSautr, testRegime)(OK, testSafeId)
           val result = connector.registerWithTrn(testTrn, testSautr, testRegime)
           await(result) mustBe RegisterWithMultipleIdentifiersSuccess(testSafeId)
+        }
+      }
+
+      "return a failure with the response failure body" when {
+        "the Registration has failed on the Register API stub with TRN" in {
+          enable(DesStub)
+
+          stubRegisterWithTrnFailure(testTrn, testSautr, testRegime)(BAD_REQUEST)
+          val result = connector.registerWithTrn(testTrn, testSautr, testRegime)
+
+          await(result) match {
+            case RegisterWithMultipleIdentifiersFailure(status, failures) =>
+              status mustBe BAD_REQUEST
+              failures.head mustBe Failures(testCode, testReason)
+            case _ => fail("test returned an invalid registration result")
+          }
         }
       }
     }

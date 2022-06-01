@@ -17,6 +17,7 @@
 package assets
 
 
+import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.soletraderidentification.models.{Address, FullName}
 
 import java.time.LocalDate
@@ -36,5 +37,12 @@ object TestConstants {
   val testFullName: FullName = FullName("fore", "sur")
   val testAddress: Address = Address("line1", "line2", Some("line3"), Some("line4"), Some("line5"), Some("AA11 11A"), "GB")
 
+  val testCode: String = "INVALID_PAYLOAD"
+  val testReason: String = "Request has not passed validation. Invalid Payload."
 
+  val testRegisterResponseFailureBody: JsObject =
+    Json.obj(
+      "code" -> "INVALID_PAYLOAD",
+      "reason" -> "Request has not passed validation. Invalid Payload."
+    )
 }
