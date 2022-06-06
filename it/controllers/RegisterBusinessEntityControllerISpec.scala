@@ -71,7 +71,7 @@ class RegisterBusinessEntityControllerISpec extends ComponentSpecHelper with Aut
         result.json mustBe resultJson
       }
     }
-    "return INTERNAL_SERVER_ERROR with status Registration_Failed" when {
+    "return REGISTRATION_FAILED" when {
       "the Registration was not successful" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubRegisterWithNinoFailure(testNino, testSautr, testRegime)(BAD_REQUEST)
@@ -84,8 +84,15 @@ class RegisterBusinessEntityControllerISpec extends ComponentSpecHelper with Aut
           )
         )
 
+        val resultJson = Json.obj(
+          "registration" -> Json.obj(
+            "registrationStatus" -> "REGISTRATION_FAILED",
+            "failures" -> Json.arr(testRegisterResponseFailureBody))
+        )
+
         val result = post("/register")(jsonBody)
-        result.status mustBe INTERNAL_SERVER_ERROR
+        result.status mustBe OK
+        result.json mustBe resultJson
 
       }
     }
@@ -113,7 +120,7 @@ class RegisterBusinessEntityControllerISpec extends ComponentSpecHelper with Aut
         result.json mustBe resultJson
       }
     }
-    "return INTERNAL_SERVER_ERROR with status Registration_Failed" when {
+    "return REGISTRATION_FAILED" when {
       "the Registration was not successful" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubRegisterWithTrnFailure(testTrn, testSautr, testRegime)(BAD_REQUEST)
@@ -124,9 +131,15 @@ class RegisterBusinessEntityControllerISpec extends ComponentSpecHelper with Aut
           "regime" -> testRegime
         )
 
-        val result = post("/register-trn")(jsonBody)
-        result.status mustBe INTERNAL_SERVER_ERROR
+        val resultJson = Json.obj(
+          "registration" -> Json.obj(
+            "registrationStatus" -> "REGISTRATION_FAILED",
+            "failures" -> Json.arr(testRegisterResponseFailureBody))
+        )
 
+        val result = post("/register-trn")(jsonBody)
+        result.status mustBe OK
+        result.json mustBe resultJson
       }
     }
   }
