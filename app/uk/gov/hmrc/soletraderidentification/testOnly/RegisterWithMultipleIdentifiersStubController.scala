@@ -36,12 +36,28 @@ class RegisterWithMultipleIdentifiersStubController @Inject()(controllerComponen
         case _ => "X00000123456789"
       }
 
-      Future.successful(Ok(Json.obj(
-        "identification" -> Json.arr(
-          Json.obj(
-            "idType" -> "SAFEID",
-            "idValue" -> stubbedSafeId
-          )
-        ))))
+      nino match {
+        case Some("AA222222A") =>
+          Future.successful(InternalServerError(Json.obj(
+            "failures" -> Json.arr(
+              Json.obj(
+                "code" -> "INVALID_REGIME",
+                "reason" -> "Request has not passed validation.  Invalid regime."
+              ),
+              Json.obj(
+                "code" -> "INVALID_PAYLOAD",
+                "reason" -> "Request has not passed validation. Invalid payload."
+              )
+            )
+          )))
+        case _ =>
+          Future.successful(Ok(Json.obj(
+            "identification" -> Json.arr(
+              Json.obj(
+                "idType" -> "SAFEID",
+                "idValue" -> stubbedSafeId
+              )
+            ))))
+      }
   }
 }

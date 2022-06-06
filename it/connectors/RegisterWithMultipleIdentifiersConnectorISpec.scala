@@ -57,13 +57,28 @@ class RegisterWithMultipleIdentifiersConnectorISpec extends ComponentSpecHelper 
         "the Registration  has failed on the Register API stub with a NINO and SAUTR" in {
           enable(DesStub)
 
-          stubRegisterWithNinoFailure(testNino, testSautr, testRegime)(BAD_REQUEST)
+          stubRegisterWithNinoFailure(testNino, testSautr, testRegime)(BAD_REQUEST, registerResponseFailureBody)
           val result = connector.registerWithNino(testNino, Some(testSautr), testRegime)
 
           await(result) match {
             case RegisterWithMultipleIdentifiersFailure(status, failures) =>
               status mustBe BAD_REQUEST
-              failures.head mustBe Failures(testCode, testReason)
+              failures.head mustBe Failures(testRegistrationFailureCode, testRegistrationFailureReason)
+            case _ => fail("test returned an invalid registration result")
+          }
+        }
+        "multiple failures have been returned" in {
+          val invalidRegimeCode = "INVALID_REGIME"
+          val invalidRegimeReason = "Request has not passed validation.  Invalid regime."
+          enable(DesStub)
+
+          stubRegisterWithNinoFailure(testNino, testSautr, testRegime)(BAD_REQUEST, registerResponseMultipleFailureBody)
+          val result = connector.registerWithNino(testNino, Some(testSautr), testRegime)
+
+          await(result) match {
+            case RegisterWithMultipleIdentifiersFailure(status, failures) =>
+              status mustBe BAD_REQUEST
+              failures mustBe Array(Failures(testRegistrationFailureCode, testRegistrationFailureReason), Failures(invalidRegimeCode, invalidRegimeReason))
             case _ => fail("test returned an invalid registration result")
           }
         }
@@ -101,7 +116,7 @@ class RegisterWithMultipleIdentifiersConnectorISpec extends ComponentSpecHelper 
           await(result) match {
             case RegisterWithMultipleIdentifiersFailure(status, failures) =>
               status mustBe BAD_REQUEST
-              failures.head mustBe Failures(testCode, testReason)
+              failures.head mustBe Failures(testRegistrationFailureCode, testRegistrationFailureReason)
             case _ => fail("test returned an invalid registration result")
           }
         }
@@ -140,7 +155,7 @@ class RegisterWithMultipleIdentifiersConnectorISpec extends ComponentSpecHelper 
           await(result) match {
             case RegisterWithMultipleIdentifiersFailure(status, failures) =>
               status mustBe BAD_REQUEST
-              failures.head mustBe Failures(testCode, testReason)
+              failures.head mustBe Failures(testRegistrationFailureCode, testRegistrationFailureReason)
             case _ => fail("test returned an invalid registration result")
           }
         }
