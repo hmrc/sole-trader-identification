@@ -32,11 +32,26 @@ trait RegisterWithMultipleIdentifiersStub extends WireMockMethods {
       )
     )
 
-  private def registerResponseFailureBody(): JsObject =
+  val registerResponseFailureBody: JsObject =
     Json.obj(
       "code" -> "INVALID_PAYLOAD",
-      "reason" -> "Request has not passed validation. Invalid Payload."
+      "reason" -> "Request has not passed validation. Invalid payload."
     )
+
+  val registerResponseMultipleFailureBody: JsObject =
+    Json.obj(
+      "failures" -> Json.arr(
+        Json.obj(
+          "code" -> "INVALID_PAYLOAD",
+          "reason" -> "Request has not passed validation. Invalid payload."
+        ),
+        Json.obj(
+          "code" -> "INVALID_REGIME",
+          "reason" -> "Request has not passed validation.  Invalid regime."
+        )
+      )
+    )
+
 
   def stubRegisterWithNinoSuccess(nino: String, sautr: String, regime: String)(status: Int, safeId: String): StubMapping = {
     val postBody = Json.obj("soleTrader" ->
@@ -64,7 +79,7 @@ trait RegisterWithMultipleIdentifiersStub extends WireMockMethods {
       )
   }
 
-  def stubRegisterWithNinoFailure(nino: String, sautr: String, regime: String)(status: Int): StubMapping = {
+  def stubRegisterWithNinoFailure(nino: String, sautr: String, regime: String)(status: Int, body: JsObject): StubMapping = {
     val postBody = Json.obj("soleTrader" ->
       Json.obj("nino" -> nino,
         "sautr" -> sautr
@@ -72,18 +87,18 @@ trait RegisterWithMultipleIdentifiersStub extends WireMockMethods {
     when(method = POST, uri = s"/cross-regime/register/GRS\\?grsRegime=$regime", postBody)
       .thenReturn(
         status = status,
-        body = registerResponseFailureBody()
+        body = body
       )
   }
 
   def stubRegisterWithNinoNoSautrFailure(nino: String, regime: String)(status: Int): StubMapping = {
     val postBody = Json.obj("soleTrader" ->
-      Json.obj("nino" -> nino ))
+      Json.obj("nino" -> nino))
 
     when(method = POST, uri = s"/cross-regime/register/GRS\\?grsRegime=$regime", postBody)
       .thenReturn(
         status = status,
-        body = registerResponseFailureBody()
+        body = registerResponseFailureBody
       )
   }
 
@@ -108,7 +123,7 @@ trait RegisterWithMultipleIdentifiersStub extends WireMockMethods {
     when(method = POST, uri = s"/cross-regime/register/GRS\\?grsRegime=$regime", postBody)
       .thenReturn(
         status = status,
-        body = registerResponseFailureBody()
+        body = registerResponseFailureBody
       )
   }
 

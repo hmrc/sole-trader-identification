@@ -35,10 +35,10 @@ A valid journeyId must be sent in the URI
 
 ##### Response
 
-| Expected Status                         | Reason
-|-----------------------------------------|------------------------------
-| ```OK(200)```                           |  ```JourneyId exists```
-| ```NOT_FOUND(404)```                    | ```JourneyId does not exist```
+| Expected Status                         | Reason                         |
+|-----------------------------------------|--------------------------------|
+| ```OK(200)```                           | ```JourneyId exists```         |
+| ```NOT_FOUND(404)```                    | ```JourneyId does not exist``` |
 
 Example response body:
 ```
@@ -74,11 +74,11 @@ Example Request URI
 
 ##### Response:
 
-| Expected Status                         | Reason
-|-----------------------------------------|------------------------------
-| ```OK(200)```                           |  ```JourneyId exists```
-| ```NOT_FOUND(404)```                    | ```No data exists for JourneyId or dataKey```
-| ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```
+| Expected Status                         | Reason                                        |
+|-----------------------------------------|-----------------------------------------------|
+| ```OK(200)```                           | ```JourneyId exists```                        |
+| ```NOT_FOUND(404)```                    | ```No data exists for JourneyId or dataKey``` |
+| ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```          |
 
 
 Response body for example URI:
@@ -106,10 +106,10 @@ Example request body:
 ```
 ##### Response:
 
-| Expected Status                         | Reason
-|-----------------------------------------|------------------------------
-| ```OK(200)```                           |  ```OK```
-| ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```
+| Expected Status                         | Reason                                 |
+|-----------------------------------------|----------------------------------------|
+| ```OK(200)```                           | ```OK```                               |
+| ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```   |
 
 #### POST /validate-details
 
@@ -129,10 +129,10 @@ Example Body:
 
 ##### Response:
 
-| Expected Status                         | Reason  
-|-----------------------------------------|------------------------------
-| ```OK(200)```                           |  ```Identifiers found in database and check returned a result```       
-| ```NOT_FOUND(404)```                    |  ```No identifiers found in databse```
+| Expected Status                         | Reason                                                          |
+|-----------------------------------------|-----------------------------------------------------------------|
+| ```OK(200)```                           | ```Identifiers found in database and check returned a result``` |
+| ```NOT_FOUND(404)```                    | ```No identifiers found in databse```                           |
 
 Example response bodies:
 ```
@@ -174,17 +174,23 @@ Example response bodies:
 ```
 {
 "registration":{
-                "registrationStatus":"REGISTERED",
-                "registeredBusinessPartnerId":"<randomm UUID>"
-               }
+       "registrationStatus":"REGISTERED",
+       "registeredBusinessPartnerId":"<randomm UUID>"
+      }
 }
 ```
 or
 ```
 {
 "registration":{
-                "registrationStatus":"REGISTRATION_FAILED",
-               }
+       "registrationStatus":"REGISTRATION_FAILED",
+       "failures": [
+            {
+               "code": "INVALID_REGIME",
+               "reason": "Request has not passed validation.  Invalid regime."
+            }
+       ]
+      }
 }
 ```
 
@@ -204,30 +210,43 @@ Example request URI:
 
 ##### Response:
 
-| Expected Status                         | Reason
-|-----------------------------------------|------------------------------
-| ```NO_CONTENT(204)```                   |  ```Field successfully deleted from database```
-| ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```
+| Expected Status                         | Reason                                         |
+|-----------------------------------------|------------------------------------------------|
+| ```NO_CONTENT(204)```                   | ```Field successfully deleted from database``` |
+| ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```           |
 
 #### POST /test-only/cross-regime/register/GRS
 
 ---
-Stub for downstream Register API
+Stub for downstream Register API. Use the Feature Switch `Use stub for submissions to DES` to use the stub.
 
-##### Request:
-No body is required for this request as this always returns a successful response regardless of the data sent.
+To mimic a failure response on the Register API call, `AA222222A` must be used as the nino.
 
 ##### Response:
-Status: **OK(200)**
-
 Example Response body:
 
+Status: **OK(200)**
 ```
 {
 "identification":{
                   "idType":"SAFEID",
                   "idValue":"X00000123456789"
                  }
+}
+```
+
+Status: **INTERNAL_SERVER_ERROR(500)**
+```
+{"failures" : [
+     {
+       "code": "INVALID_REGIME",
+       "reason": "Request has not passed validation.  Invalid regime."
+     },
+     {
+       "code": "INVALID_PAYLOAD",
+       "reason": "Request has not passed validation. Invalid payload."
+     }
+ ]
 }
 ```
 

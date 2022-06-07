@@ -74,7 +74,7 @@ class RegisterBusinessEntityControllerISpec extends ComponentSpecHelper with Aut
     "return REGISTRATION_FAILED" when {
       "the Registration was not successful" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubRegisterWithNinoFailure(testNino, testSautr, testRegime)(BAD_REQUEST)
+        stubRegisterWithNinoFailure(testNino, testSautr, testRegime)(BAD_REQUEST, registerResponseFailureBody)
 
         val jsonBody = Json.obj(
           "soleTrader" -> Json.obj(
@@ -93,7 +93,6 @@ class RegisterBusinessEntityControllerISpec extends ComponentSpecHelper with Aut
         val result = post("/register")(jsonBody)
         result.status mustBe OK
         result.json mustBe resultJson
-
       }
     }
   }
