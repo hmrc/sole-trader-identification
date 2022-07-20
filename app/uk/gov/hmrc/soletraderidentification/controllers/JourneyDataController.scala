@@ -20,11 +20,12 @@ import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.internalId
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
+import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.soletraderidentification.services.JourneyDataService
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class JourneyDataController @Inject()(cc: ControllerComponents,
@@ -42,7 +43,7 @@ class JourneyDataController @Inject()(cc: ControllerComponents,
             journeyId => Created(Json.obj(journeyIdKey -> journeyId))
           }
         case None =>
-          Future.successful(Unauthorized)
+          throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }
   }
 
@@ -60,7 +61,7 @@ class JourneyDataController @Inject()(cc: ControllerComponents,
               ))
           }
         case None =>
-          Future.successful(Unauthorized)
+          throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }
   }
 
@@ -74,20 +75,23 @@ class JourneyDataController @Inject()(cc: ControllerComponents,
               "reason" -> s"No data exists for either journey ID: $journeyId or data key: $dataKey"))
           }
         case None =>
-          Future.successful(Unauthorized)
+          throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }
   }
 
-
   def updateJourneyData(journeyId: String, dataKey: String): Action[JsValue] = Action.async(parse.json) {
-    implicit request =>
+    implicit req =>
       authorised().retrieve(internalId) {
         case Some(internalId) =>
-          journeyDataService.updateJourneyData(journeyId, dataKey, request.body, internalId).map {
-            _ => Ok
+          journeyDataService.updateJourneyData(journeyId, internalId, dataKey, req.body).map {
+            hasUpdated =>
+              if(hasUpdated)
+                Ok
+              else
+                throw new InternalServerException(s"The field $dataKey could not be updated for journey $journeyId")
           }
         case None =>
-          Future.successful(Unauthorized)
+          throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }
   }
 
@@ -96,10 +100,14 @@ class JourneyDataController @Inject()(cc: ControllerComponents,
       authorised().retrieve(internalId) {
         case Some(internalId) =>
           journeyDataService.removeJourneyDataField(journeyId, internalId, dataKey).map {
-            _ => NoContent
+            journeyDataMatched =>
+              if(journeyDataMatched)
+                NoContent
+              else
+                throw new InternalServerException(s"The journey data for $journeyId is not be found")
           }
         case None =>
-          Future.successful(Unauthorized)
+          throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }
   }
 
@@ -108,10 +116,14 @@ class JourneyDataController @Inject()(cc: ControllerComponents,
       authorised().retrieve(internalId) {
         case Some(internalId) =>
           journeyDataService.removeJourneyData(journeyId, internalId).map {
-            _ => NoContent
+            journeyDataMatched =>
+              if(journeyDataMatched)
+                NoContent
+              else
+                throw new InternalServerException(s"The journey data for $journeyId could not be found")
           }
         case None =>
-          Future.successful(Unauthorized)
+          throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }
   }
 
