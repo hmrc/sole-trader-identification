@@ -19,19 +19,15 @@ package repositories
 import assets.TestConstants.{testInternalId, testJourneyId}
 import play.api.libs.json.{JsString, Json}
 import play.api.test.Helpers._
-import reactivemongo.play.json.JsObjectDocumentWriter
-import uk.gov.hmrc.soletraderidentification.models.JourneyDataModel
-import uk.gov.hmrc.soletraderidentification.repositories.JourneyDataRepository
-import uk.gov.hmrc.soletraderidentification.repositories.JourneyDataRepository._
-import utils.ComponentSpecHelper
+import utils.{ComponentSpecHelper, JourneyDataMongoHelper}
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import java.util.concurrent.TimeUnit
 
-class JourneyDataRepositoryISpec extends ComponentSpecHelper {
+class JourneyDataRepositoryISpec extends ComponentSpecHelper with JourneyDataMongoHelper{
 
-  val repo: JourneyDataRepository = app.injector.instanceOf[JourneyDataRepository]
   val authInternalIdKey: String = "authInternalId"
   val creationTimestampKey: String = "creationTimestamp"
+  val journeyIdKey: String = "_id"
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -40,14 +36,14 @@ class JourneyDataRepositoryISpec extends ComponentSpecHelper {
 
   "createJourney" should {
     "successfully insert the journeyId" in {
-      await(repo.createJourney(testJourneyId, testInternalId))
-      await(repo.findById(testJourneyId)) mustBe Some(JourneyDataModel(testJourneyId))
+      await(repo.createJourney(testJourneyId, testInternalId)) mustBe testJourneyId
     }
   }
   s"getJourneyData($testJourneyId)" should {
     "successfully return all data" in {
       await(repo.createJourney(testJourneyId, testInternalId))
-      await(repo.getJourneyData(testJourneyId, testInternalId)).map(_.-(creationTimestampKey)) mustBe Some(Json.obj(authInternalIdKey -> testInternalId))
+      await(repo.getJourneyData(testJourneyId, testInternalId)).map(_.-(creationTimestampKey)) mustBe
+        Some(Json.obj(journeyIdKey -> testJourneyId, authInternalIdKey -> testInternalId))
     }
   }
   "updateJourneyData" should {
@@ -55,7 +51,7 @@ class JourneyDataRepositoryISpec extends ComponentSpecHelper {
       val testKey = "testKey"
       val testData = "test"
       await(repo.createJourney(testJourneyId, testInternalId))
-      await(repo.updateJourneyData(testJourneyId, testKey, JsString(testData), testInternalId))
+      await(repo.updateJourneyData(testJourneyId, testInternalId, testKey, JsString(testData))) mustBe true
       await(repo.getJourneyData(testJourneyId, testInternalId)).map(json => (json \ testKey).as[String]) mustBe Some(testData)
     }
     "successfully update data when data is already stored against a key" in {
@@ -63,8 +59,8 @@ class JourneyDataRepositoryISpec extends ComponentSpecHelper {
       val testData = "test"
       val updatedData = "updated"
       await(repo.createJourney(testJourneyId, testInternalId))
-      await(repo.updateJourneyData(testJourneyId, testKey, JsString(testData), testInternalId))
-      await(repo.updateJourneyData(testJourneyId, testKey, JsString(updatedData), testInternalId))
+      await(repo.updateJourneyData(testJourneyId, testInternalId, testKey, JsString(testData)))
+      await(repo.updateJourneyData(testJourneyId, testInternalId, testKey, JsString(updatedData)))
       await(repo.getJourneyData(testJourneyId, testInternalId)).map(json => (json \ testKey).as[String]) mustBe Some(updatedData)
     }
 
@@ -75,9 +71,10 @@ class JourneyDataRepositoryISpec extends ComponentSpecHelper {
       val testData = "test"
 
       await(repo.createJourney(testJourneyId, testInternalId))
-      await(repo.updateJourneyData(testJourneyId, testKey, JsString(testData), testInternalId))
-      await(repo.removeJourneyDataField(testJourneyId, testInternalId, testKey))
-      await(repo.getJourneyData(testJourneyId, testInternalId)).map(_.-(creationTimestampKey)) mustBe Some(Json.obj(authInternalIdKey -> testInternalId))
+      await(repo.updateJourneyData(testJourneyId, testInternalId, testKey, JsString(testData)))
+      await(repo.removeJourneyDataField(testJourneyId, testInternalId, testKey)) mustBe true
+      await(repo.getJourneyData(testJourneyId, testInternalId)).map(_.-(creationTimestampKey)) mustBe
+        Some(Json.obj(journeyIdKey -> testJourneyId, authInternalIdKey -> testInternalId))
     }
     "pass successfully when the field is not present" in {
       val testKey = "testKey"
@@ -85,21 +82,40 @@ class JourneyDataRepositoryISpec extends ComponentSpecHelper {
       val testSecondKey = "secondKey"
 
       await(repo.createJourney(testJourneyId, testInternalId))
-      await(repo.updateJourneyData(testJourneyId, testKey, JsString(testData), testInternalId))
-      await(repo.removeJourneyDataField(testJourneyId, testInternalId, testSecondKey))
-      await(repo.getJourneyData(testJourneyId, testInternalId)).map(_.-(creationTimestampKey)) mustBe Some(Json.obj(authInternalIdKey -> testInternalId, testKey -> testData))
+      await(repo.updateJourneyData(testJourneyId, testInternalId, testKey, JsString(testData)))
+      await(repo.removeJourneyDataField(testJourneyId, testInternalId, testSecondKey)) mustBe true
+      await(repo.getJourneyData(testJourneyId, testInternalId)).map(_.-(creationTimestampKey)) mustBe
+        Some(Json.obj(journeyIdKey -> testJourneyId, authInternalIdKey -> testInternalId, testKey -> testData))
     }
   }
   "removeJourneyData" should {
     "successfully remove data associated with journeyId" in {
-      val json = Json.obj(JourneyIdKey -> testJourneyId,
-        AuthInternalIdKey -> testInternalId,
-        "FullName" -> Json.obj("firstName" -> "John", "lastName" -> "Smith"))
+      val json = Json.obj(journeyIdKey -> testJourneyId,
+        authInternalIdKey -> testInternalId,
+        "testJson" -> Json.obj("testKey" -> "testValue", "secondTestKey" -> "secondTestValue"))
 
-      await(repo.collection.insert.one(json))
-      await(repo.removeJourneyData(testJourneyId, testInternalId))
-      await(repo.getJourneyData(testJourneyId, testInternalId)).map(_.-(creationTimestampKey)) mustBe Some(Json.obj(authInternalIdKey -> testInternalId))
+      insertById(testJourneyId, testInternalId, json)
+      await(repo.removeJourneyData(testJourneyId, testInternalId)) mustBe true
+      await(repo.getJourneyData(testJourneyId, testInternalId)).map(_.-(creationTimestampKey)) mustBe
+        Some(Json.obj(journeyIdKey -> testJourneyId, authInternalIdKey -> testInternalId))
 
+      await(repo.getJourneyData(testJourneyId, testInternalId)).map(_.keys.contains(creationTimestampKey)) mustBe Some(true)
+    }
+    "return false if data associated with journeyId cannot be found" in {
+      val json = Json.obj(journeyIdKey -> testJourneyId,
+        authInternalIdKey -> testInternalId,
+        "testJson" -> Json.obj("testKey" -> "testValue", "secondTestKey" -> "secondTestValue"))
+
+      val testWrongJourneyId = "11111111"
+
+      insertById(testJourneyId, testInternalId, json)
+      await(repo.removeJourneyData(testWrongJourneyId, testWrongJourneyId)) mustBe false
+      await(repo.getJourneyData(testJourneyId, testInternalId)) mustBe Some(json)
+    }
+  }
+  "repository" should {
+    "have the correct TTL" in {
+      repo.indexes.head.getOptions.getExpireAfter(TimeUnit.SECONDS) mustBe 3600
     }
   }
 }
