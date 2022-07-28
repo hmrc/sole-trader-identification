@@ -37,8 +37,7 @@ class JourneyDataRepository @Inject()(mongoComponent: MongoComponent,
   collectionName = "sole-trader-identification",
   mongoComponent = mongoComponent,
   domainFormat = implicitly[Format[JsObject]],
-  indexes = Seq(timeToLiveIndex(appConfig.timeToLiveSeconds)),
-  replaceIndexes = true
+  indexes = Seq(timeToLiveIndex(appConfig.timeToLiveSeconds))
 ) {
 
 
