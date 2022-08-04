@@ -7,3 +7,5 @@ POST       /api/feature-switches                                        uk.gov.h
 POST       /cross-regime/register/GRS                                   uk.gov.hmrc.soletraderidentification.testOnly.RegisterWithMultipleIdentifiersStubController.registerWithMultipleIdentifiers
 
 POST       /individuals/trn                                             uk.gov.hmrc.soletraderidentification.testOnly.CreateTemporaryReferenceNumberStubController.createTemporaryReferenceNumber
+
+POST       /nino/insights                                               uk.gov.hmrc.soletraderidentification.testOnly.InsightStubController.retrieveInsight

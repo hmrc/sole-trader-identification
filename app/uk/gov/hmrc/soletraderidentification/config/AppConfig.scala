@@ -18,7 +18,7 @@ package uk.gov.hmrc.soletraderidentification.config
 
 import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.soletraderidentification.featureswitch.core.config.{CreateTrnStub, DesStub, FeatureSwitching, StubGetSaReference}
+import uk.gov.hmrc.soletraderidentification.featureswitch.core.config.{CreateTrnStub, DesStub, FeatureSwitching, InsightStub, StubGetSaReference}
 
 import javax.inject.{Inject, Singleton}
 
@@ -71,5 +71,18 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
     s"Bearer ${servicesConfig.getString("microservice.services.integration-framework.authorization-token")}"
 
   val timeToLiveSeconds: Int = servicesConfig.getInt("mongodb.timeToLiveSeconds")
+
+  lazy val insightBaseUrl: String = servicesConfig.getString("microservice.services.insight.url")
+
+  lazy val insightStubBaseUrl: String = servicesConfig.getString("microservice.services.insight.stub-url")
+
+  lazy val insightResult: String = servicesConfig.getString("microservice.services.insight.result")
+
+  lazy val insightMessages: Seq[String] = config.get[Seq[String]]("microservice.services.insight.messages")
+
+  def getInsightUrl: String = {
+    val baseUrl: String = if(isEnabled(InsightStub)) insightStubBaseUrl else insightBaseUrl
+    s"$baseUrl/nino/insights"
+  }
 
 }

@@ -25,7 +25,7 @@ import javax.inject.Singleton
 @Singleton
 class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
 
-  val switches = Seq(StubGetSaReference, DesStub, CreateTrnStub)
+  val switches = Seq(StubGetSaReference, DesStub, CreateTrnStub, InsightStub)
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
     Seq(
@@ -49,3 +49,7 @@ case object CreateTrnStub extends FeatureSwitch {
   override val displayName: String = "Use stub for generating temporary reference numbers"
 }
 
+case object InsightStub extends FeatureSwitch {
+  override val configName: String = "feature-switch.insight-stub"
+  override val displayName: String = "Use stub for insight"
+}
