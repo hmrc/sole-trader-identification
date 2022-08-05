@@ -28,6 +28,7 @@ object TestConstants {
   val testJourneyId: String = UUID.randomUUID().toString
   val testInternalId: String = UUID.randomUUID().toString
   val testSafeId: String = UUID.randomUUID().toString
+  val testCorrelationId: String = UUID.randomUUID().toString
   val testNino: String = "AA111111A"
   val testSautr: String = "1234567890"
   val testTrn: String = "1234567891"
@@ -45,4 +46,10 @@ object TestConstants {
       "code" -> testRegistrationFailureCode,
       "reason" -> testRegistrationFailureReason
     )
+
+  val testInsightsReturnBody: JsObject = Json.obj(
+    "ninoInsightsCorrelationId" -> testCorrelationId,
+    "code" -> 0,
+    "reason" -> "0 code"
+  )
 }

@@ -52,7 +52,9 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
     "microservice.services.des.stub-url" -> mockUrl,
     "microservice.services.des.url" -> mockUrl,
     "microservice.services.integration-framework.stub-url" -> mockUrl,
-    "microservice.services.integration-framework.url" -> mockUrl)
+    "microservice.services.integration-framework.url" -> mockUrl,
+    "microservice.services.insight.url" -> mockUrl,
+    "microservice.services.insight.stub-url" -> mockUrl)
 
   implicit val ws: WSClient = app.injector.instanceOf[WSClient]
 
