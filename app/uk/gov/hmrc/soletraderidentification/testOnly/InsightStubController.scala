@@ -16,29 +16,32 @@
 
 package uk.gov.hmrc.soletraderidentification.testOnly
 
-import play.api.libs.json.{Json, JsValue}
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, ControllerComponents}
-
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.soletraderidentification.config.AppConfig
 
-import scala.concurrent.Future
-
+import java.util.UUID
 import javax.inject.{Inject, Singleton}
+import scala.concurrent.Future
 
 @Singleton
 class InsightStubController @Inject()(controllerComponents: ControllerComponents, appConfig: AppConfig)
   extends BackendController(controllerComponents) {
 
-  def retrieveInsight: Action[JsValue] = Action.async(parse.json){
+  def retrieveInsight: Action[JsValue] = Action.async(parse.json) {
     implicit request =>
+
+      val correlationId = UUID.randomUUID().toString
 
       (request.body \ "nino").as[String] match {
         case "AA222222B" => Future.successful(Ok(Json.obj(
+          "ninoInsightsCorrelationId" -> correlationId,
           appConfig.insightResult -> 100,
           "reason" -> appConfig.insightMessages.head
         )))
         case _ => Future.successful(Ok(Json.obj(
+          "ninoInsightsCorrelationId" -> correlationId,
           appConfig.insightResult -> 0,
           "reason" -> appConfig.insightMessages.last
         )))

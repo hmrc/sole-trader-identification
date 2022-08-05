@@ -47,7 +47,7 @@ trait CreateTemporaryReferenceNumberStub extends WireMockMethods {
         "address" -> Json.toJson(address)
       )
 
-    when(method = POST, uri = s"/individuals/trn", body = jsonBody, headers = iFHeaders)
+    when(method = POST, uri = "/individuals/trn", body = jsonBody, headers = iFHeaders)
       .thenReturn(status, body)
 
   }
