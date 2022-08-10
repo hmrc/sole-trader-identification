@@ -78,7 +78,8 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
 
   lazy val insightResult: String = servicesConfig.getString("microservice.services.insight.result")
 
-  lazy val insightMessages: Seq[String] = config.get[Seq[String]]("microservice.services.insight.messages")
+  lazy val insightMessages: Seq[String] =
+    Seq(servicesConfig.getString("microservice.services.insight.message1"), servicesConfig.getString("microservice.services.insight.message2"))
 
   def getInsightUrl: String = {
     val baseUrl: String = if(isEnabled(InsightStub)) insightStubBaseUrl else insightBaseUrl
