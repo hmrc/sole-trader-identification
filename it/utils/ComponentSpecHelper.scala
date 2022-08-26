@@ -74,13 +74,13 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
   }
 
   def get[T](uri: String): WSResponse = {
-    await(buildClient(uri).withHttpHeaders().get)
+    await(buildClient(uri).withHttpHeaders("Authorization" -> "Bearer123").get)
   }
 
   def post[T](uri: String)(body: T)(implicit writes: Writes[T]): WSResponse = {
     await(
       buildClient(uri)
-        .withHttpHeaders("Content-Type" -> "application/json")
+        .withHttpHeaders("Content-Type" -> "application/json", "Authorization" -> "Bearer123")
         .post(writes.writes(body).toString())
     )
   }
@@ -88,13 +88,13 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
   def put[T](uri: String)(body: T)(implicit writes: Writes[T]): WSResponse = {
     await(
       buildClient(uri)
-        .withHttpHeaders("Content-Type" -> "application/json")
+        .withHttpHeaders("Content-Type" -> "application/json", "Authorization" -> "Bearer123")
         .put(writes.writes(body).toString())
     )
   }
 
   def delete[T](uri: String): WSResponse = {
-    await(buildClient(uri).delete())
+    await(buildClient(uri).withHttpHeaders("Authorization" -> "Bearer123").delete())
   }
 
   val baseUrl: String = "/sole-trader-identification"
