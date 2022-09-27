@@ -83,7 +83,7 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
 
   def getInsightUrl: String = {
     val baseUrl: String = if(isEnabled(InsightStub)) insightStubBaseUrl else insightBaseUrl
-    s"$baseUrl/nino/insights"
+    s"$baseUrl/nino-insights/check/insights"
   }
 
 }
