@@ -29,7 +29,7 @@ trait NinoInsightsStub extends WireMockMethods {
       "nino" -> nino
     )
 
-    when(method = POST, uri = "/nino/insights", body = jsonBody).thenReturn(status, body)
+    when(method = POST, uri = "/nino-insights/check/insights", body = jsonBody).thenReturn(status, body)
   }
 
 }

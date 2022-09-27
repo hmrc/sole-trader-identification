@@ -8,4 +8,4 @@ POST       /cross-regime/register/GRS                                   uk.gov.h
 
 POST       /individuals/trn                                             uk.gov.hmrc.soletraderidentification.testOnly.CreateTemporaryReferenceNumberStubController.createTemporaryReferenceNumber
 
-POST       /nino/insights                                               uk.gov.hmrc.soletraderidentification.testOnly.InsightStubController.retrieveInsight
+POST       /nino-insights/check/insights                                uk.gov.hmrc.soletraderidentification.testOnly.InsightStubController.retrieveInsight

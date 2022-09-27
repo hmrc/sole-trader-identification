@@ -51,7 +51,7 @@ class NinoInsightsConnectorISpec extends ComponentSpecHelper with FeatureSwitchi
       }
       "the json validation fails" in {
         disable(InsightStub)
-        when(method = POST, uri = "/nino/insights", body = Json.obj("nino" -> testNino)).thenReturn(OK, "test")
+        when(method = POST, uri = "/nino-insights/check/insights", body = Json.obj("nino" -> testNino)).thenReturn(OK, "test")
 
         intercept[InternalServerException](
           await(connector.retrieveNinoInsight(testNino))
