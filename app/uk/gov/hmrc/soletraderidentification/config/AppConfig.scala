@@ -86,4 +86,6 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
     s"$baseUrl/nino-insights/check/insights"
   }
 
+  lazy val internalAuthToken: String = servicesConfig.getString("internal-auth.token")
+
 }
