@@ -30,12 +30,17 @@ class NinoInsightsConnector @Inject()(http: HttpClient,
                                         appConfig: AppConfig
                                        )(implicit ec: ExecutionContext) {
 
+  lazy val extraHeaders = Seq(
+    "Authorization" -> appConfig.internalAuthToken,
+    "Content-Type" -> "application/json"
+  )
+
   def retrieveNinoInsight(nino: String)(implicit hc: HeaderCarrier): Future[JsObject] = {
     val jsonBody = Json.obj(
       "nino" -> nino
     )
 
-    http.POST[JsObject, JsObject](appConfig.getInsightUrl, body = jsonBody)(implicitly[Writes[JsObject]],
+    http.POST[JsObject, JsObject](appConfig.getInsightUrl, body = jsonBody, headers = extraHeaders)(implicitly[Writes[JsObject]],
       NinoReputationHttpReads,
       hc,
       ec
