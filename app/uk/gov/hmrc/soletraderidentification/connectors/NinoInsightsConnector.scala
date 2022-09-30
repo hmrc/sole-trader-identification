@@ -17,8 +17,8 @@
 package uk.gov.hmrc.soletraderidentification.connectors
 
 import play.api.http.Status.OK
-import play.api.libs.json.{JsError, JsObject, JsSuccess, Json, Writes}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse, InternalServerException}
+import play.api.libs.json._
+import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpClient, HttpReads, HttpResponse, InternalServerException}
 import uk.gov.hmrc.soletraderidentification.config.AppConfig
 import uk.gov.hmrc.soletraderidentification.connectors.NinoReputationParser.NinoReputationHttpReads
 
@@ -27,22 +27,17 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class NinoInsightsConnector @Inject()(http: HttpClient,
-                                        appConfig: AppConfig
-                                       )(implicit ec: ExecutionContext) {
-
-  lazy val extraHeaders = Seq(
-    "Authorization" -> appConfig.internalAuthToken,
-    "Content-Type" -> "application/json"
-  )
+                                      appConfig: AppConfig
+                                     )(implicit ec: ExecutionContext) {
 
   def retrieveNinoInsight(nino: String)(implicit hc: HeaderCarrier): Future[JsObject] = {
     val jsonBody = Json.obj(
       "nino" -> nino
     )
 
-    http.POST[JsObject, JsObject](appConfig.getInsightUrl, body = jsonBody, headers = extraHeaders)(implicitly[Writes[JsObject]],
+    http.POST[JsObject, JsObject](appConfig.getInsightUrl, body = jsonBody)(implicitly[Writes[JsObject]],
       NinoReputationHttpReads,
-      hc,
+      hc.copy(authorization = Some(Authorization(appConfig.internalAuthToken))),
       ec
     )
   }
