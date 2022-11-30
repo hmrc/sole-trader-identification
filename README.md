@@ -7,7 +7,12 @@
 3. Run the frontend locally using
    `sbt 'run 9721 -Dapplication.router=testOnlyDoNotUseInAppConf.Routes'`
 
-### End-Points
+## Testing
+
+---
+See [TestREADME](TestREADME.md) for more information about test data and endpoints
+
+## End-Points
 #### POST /journey
 
 ---
@@ -214,41 +219,6 @@ Example request URI:
 |-----------------------------------------|------------------------------------------------|
 | ```NO_CONTENT(204)```                   | ```Field successfully deleted from database``` |
 | ```FORBIDDEN(403)```                    | ```Auth Internal IDs do not match```           |
-
-#### POST /test-only/cross-regime/register/GRS
-
----
-Stub for downstream Register API. Use the Feature Switch `Use stub for submissions to DES` to use the stub.
-
-To mimic a failure response on the Register API call, `AA222222A` must be used as the nino.
-
-##### Response:
-Example Response body:
-
-Status: **OK(200)**
-```
-{
-"identification":{
-                  "idType":"SAFEID",
-                  "idValue":"X00000123456789"
-                 }
-}
-```
-
-Status: **INTERNAL_SERVER_ERROR(500)**
-```
-{"failures" : [
-     {
-       "code": "INVALID_REGIME",
-       "reason": "Request has not passed validation.  Invalid regime."
-     },
-     {
-       "code": "INVALID_PAYLOAD",
-       "reason": "Request has not passed validation. Invalid payload."
-     }
- ]
-}
-```
 
 ### License
 
