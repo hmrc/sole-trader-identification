@@ -115,7 +115,7 @@ class JourneyDataRepositoryISpec extends ComponentSpecHelper with JourneyDataMon
   }
   "repository" should {
     "have the correct TTL" in {
-      repo.indexes.head.getOptions.getExpireAfter(TimeUnit.SECONDS) mustBe 3600
+      repo.indexes.head.getOptions.getExpireAfter(TimeUnit.SECONDS) mustBe 14400
     }
   }
 }
