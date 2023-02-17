@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,7 +115,7 @@ class JourneyDataRepositoryISpec extends ComponentSpecHelper with JourneyDataMon
   }
   "repository" should {
     "have the correct TTL" in {
-      repo.indexes.head.getOptions.getExpireAfter(TimeUnit.SECONDS) mustBe 3600
+      repo.indexes.head.getOptions.getExpireAfter(TimeUnit.SECONDS) mustBe 14400
     }
   }
 }
