@@ -70,7 +70,9 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
   lazy val integrationFrameworkAuthorizationToken: String =
     s"Bearer ${servicesConfig.getString("microservice.services.integration-framework.authorization-token")}"
 
-  val timeToLiveSeconds: Int = servicesConfig.getInt("mongodb.timeToLiveSeconds")
+  lazy val timeToLiveSeconds: Int = servicesConfig.getInt("mongodb.timeToLiveSeconds")
+
+  lazy val replaceIndexesAtStartUp: Boolean = config.getOptional[Boolean]("mongodb.replaceIndexesAtStartUp").getOrElse(false)
 
   lazy val insightBaseUrl: String = servicesConfig.getString("microservice.services.insight.url")
 
