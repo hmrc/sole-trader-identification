@@ -22,14 +22,13 @@ import utils.WireMockMethods
 
 trait NinoInsightsStub extends WireMockMethods {
 
-  def stubRetrieveNinoInsight(nino: String)(status: Int,
-                                        body: JsObject = Json.obj()): StubMapping = {
+  def stubRetrieveNinoInsight(nino: String)(status: Int, body: JsObject = Json.obj()): StubMapping = {
 
     val jsonBody = Json.obj(
       "nino" -> nino
     )
 
-    when(method = POST, uri = "/nino-insights/check/insights", body = jsonBody).thenReturn(status, body)
+    when(method = POST, uri = "/nino-insights-proxy/check/insights", body = jsonBody).thenReturn(status, body)
   }
 
 }
