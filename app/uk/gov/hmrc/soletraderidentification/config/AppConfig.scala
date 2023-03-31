@@ -23,7 +23,7 @@ import uk.gov.hmrc.soletraderidentification.featureswitch.core.config.{CreateTrn
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig) extends FeatureSwitching {
+class AppConfig @Inject() (config: Configuration, servicesConfig: ServicesConfig) extends FeatureSwitching {
 
   val authBaseUrl: String = servicesConfig.baseUrl("auth")
 
@@ -74,9 +74,11 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
 
   lazy val replaceIndexesAtStartUp: Boolean = config.getOptional[Boolean]("mongodb.replaceIndexesAtStartUp").getOrElse(false)
 
-  lazy val insightBaseUrl: String = servicesConfig.getString("microservice.services.insight.url")
+  lazy val insightHost: String = servicesConfig.getString("microservice.services.insight.host")
 
-  lazy val insightStubBaseUrl: String = servicesConfig.getString("microservice.services.insight.stub-url")
+  lazy val insightStubHost: String = servicesConfig.getString("microservice.services.insight.stub-host")
+
+  lazy val insightPathRoot: String = servicesConfig.getString("microservice.services.insight.path")
 
   lazy val insightResult: String = servicesConfig.getString("microservice.services.insight.result")
 
@@ -84,8 +86,8 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
     Seq(servicesConfig.getString("microservice.services.insight.message1"), servicesConfig.getString("microservice.services.insight.message2"))
 
   def getInsightUrl: String = {
-    val baseUrl: String = if(isEnabled(InsightStub)) insightStubBaseUrl else insightBaseUrl
-    s"$baseUrl/nino-insights/check/insights"
+    val host: String = if (isEnabled(InsightStub)) insightStubHost else insightHost
+    s"$host$insightPathRoot/check/insights"
   }
 
   lazy val internalAuthToken: String = servicesConfig.getString("internal-auth.token")

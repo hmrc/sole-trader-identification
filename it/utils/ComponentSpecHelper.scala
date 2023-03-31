@@ -22,16 +22,18 @@ import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.Writes
+import play.api.libs.json.{Json, Writes}
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import play.api.test.Helpers.{await, _}
 
-trait ComponentSpecHelper extends AnyWordSpec with Matchers
-  with CustomMatchers
-  with WiremockHelper
-  with BeforeAndAfterAll
-  with BeforeAndAfterEach
-  with GuiceOneServerPerSuite {
+trait ComponentSpecHelper
+    extends AnyWordSpec
+    with Matchers
+    with CustomMatchers
+    with WiremockHelper
+    with BeforeAndAfterAll
+    with BeforeAndAfterEach
+    with GuiceOneServerPerSuite {
 
   override lazy val app: Application = new GuiceApplicationBuilder()
     .configure(config)
@@ -41,20 +43,23 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
   val mockHost: String = WiremockHelper.wiremockHost
   val mockPort: String = WiremockHelper.wiremockPort.toString
   val mockUrl: String = s"http://$mockHost:$mockPort"
+  val insightPath: String = "/nino-insights-proxy"
 
   def config: Map[String, String] = Map(
-    "auditing.enabled" -> "false",
-    "play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck",
-    "microservice.services.auth.host" -> mockHost,
-    "microservice.services.auth.port" -> mockPort,
-    "microservice.services.base.host" -> mockHost,
-    "microservice.services.base.port" -> mockPort,
-    "microservice.services.des.stub-url" -> mockUrl,
-    "microservice.services.des.url" -> mockUrl,
+    "auditing.enabled"                                     -> "false",
+    "play.filters.csrf.header.bypassHeaders.Csrf-Token"    -> "nocheck",
+    "microservice.services.auth.host"                      -> mockHost,
+    "microservice.services.auth.port"                      -> mockPort,
+    "microservice.services.base.host"                      -> mockHost,
+    "microservice.services.base.port"                      -> mockPort,
+    "microservice.services.des.stub-url"                   -> mockUrl,
+    "microservice.services.des.url"                        -> mockUrl,
     "microservice.services.integration-framework.stub-url" -> mockUrl,
-    "microservice.services.integration-framework.url" -> mockUrl,
-    "microservice.services.insight.url" -> mockUrl,
-    "microservice.services.insight.stub-url" -> mockUrl)
+    "microservice.services.integration-framework.url"      -> mockUrl,
+    "microservice.services.insight.host"                   -> mockUrl,
+    "microservice.services.insight.stub-host"              -> mockUrl,
+    "microservice.services.insight.path"                   -> insightPath
+  )
 
   implicit val ws: WSClient = app.injector.instanceOf[WSClient]
 
@@ -73,29 +78,25 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
     super.beforeEach()
   }
 
-  def get[T](uri: String): WSResponse = {
+  def get[T](uri: String): WSResponse =
     await(buildClient(uri).withHttpHeaders("Authorization" -> "Bearer123").get)
-  }
 
-  def post[T](uri: String)(body: T)(implicit writes: Writes[T]): WSResponse = {
+  def post[T](uri: String)(body: T)(implicit writes: Writes[T]): WSResponse =
     await(
       buildClient(uri)
         .withHttpHeaders("Content-Type" -> "application/json", "Authorization" -> "Bearer123")
-        .post(writes.writes(body).toString())
+        .post(Json.toJson(body))
     )
-  }
 
-  def put[T](uri: String)(body: T)(implicit writes: Writes[T]): WSResponse = {
+  def put[T](uri: String)(body: T)(implicit writes: Writes[T]): WSResponse =
     await(
       buildClient(uri)
         .withHttpHeaders("Content-Type" -> "application/json", "Authorization" -> "Bearer123")
-        .put(writes.writes(body).toString())
+        .put(Json.toJson(body))
     )
-  }
 
-  def delete[T](uri: String): WSResponse = {
+  def delete[T](uri: String): WSResponse =
     await(buildClient(uri).withHttpHeaders("Authorization" -> "Bearer123").delete())
-  }
 
   val baseUrl: String = "/sole-trader-identification"
 

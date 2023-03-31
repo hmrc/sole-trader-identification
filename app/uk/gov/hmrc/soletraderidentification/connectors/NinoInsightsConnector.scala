@@ -26,9 +26,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class NinoInsightsConnector @Inject()(http: HttpClient,
-                                      appConfig: AppConfig
-                                     )(implicit ec: ExecutionContext) {
+class NinoInsightsConnector @Inject() (http: HttpClient, appConfig: AppConfig)(implicit ec: ExecutionContext) {
 
   def retrieveNinoInsight(nino: String)(implicit hc: HeaderCarrier): Future[JsObject] = {
     val jsonBody = Json.obj(
@@ -36,10 +34,10 @@ class NinoInsightsConnector @Inject()(http: HttpClient,
     )
 
     http.POST[JsObject, JsObject](appConfig.getInsightUrl, body = jsonBody)(implicitly[Writes[JsObject]],
-      NinoReputationHttpReads,
-      hc.copy(authorization = Some(Authorization(appConfig.internalAuthToken))),
-      ec
-    )
+                                                                            NinoReputationHttpReads,
+                                                                            hc.copy(authorization = Some(Authorization(appConfig.internalAuthToken))),
+                                                                            ec
+                                                                           )
   }
 
 }
@@ -47,15 +45,14 @@ class NinoInsightsConnector @Inject()(http: HttpClient,
 object NinoReputationParser {
 
   object NinoReputationHttpReads extends HttpReads[JsObject] {
-    override def read(method: String, url: String, response: HttpResponse): JsObject = {
+    override def read(method: String, url: String, response: HttpResponse): JsObject =
       response.status match {
-        case OK => response.json.validate[JsObject] match {
-          case JsSuccess(response, _) => response
-          case JsError(errors) => throw new InternalServerException("Nino Insights call failed with error: " + errors)
-        }
+        case OK =>
+          response.json.validate[JsObject] match {
+            case JsSuccess(response, _) => response
+            case JsError(errors)        => throw new InternalServerException("Nino Insights call failed with error: " + errors)
+          }
         case status => throw new InternalServerException("Unexpected status returned from the Nino Insights call: " + status)
       }
-    }
   }
 }
-
