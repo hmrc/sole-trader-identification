@@ -43,7 +43,7 @@ trait ComponentSpecHelper
   val mockHost: String = WiremockHelper.wiremockHost
   val mockPort: String = WiremockHelper.wiremockPort.toString
   val mockUrl: String = s"http://$mockHost:$mockPort"
-  val insightPath: String = "/nino-insights-proxy"
+  val insightPath: String = "check/insights"
 
   def config: Map[String, String] = Map(
     "auditing.enabled"                                     -> "false",
@@ -56,8 +56,10 @@ trait ComponentSpecHelper
     "microservice.services.des.url"                        -> mockUrl,
     "microservice.services.integration-framework.stub-url" -> mockUrl,
     "microservice.services.integration-framework.url"      -> mockUrl,
-    "microservice.services.insight.host"                   -> mockUrl,
-    "microservice.services.insight.stub-host"              -> mockUrl,
+    "microservice.services.insight.host"                   -> mockHost,
+    "microservice.services.insight.port"                   -> mockPort,
+    "microservice.services.insight-stub.host"              -> mockUrl,
+    "microservice.services.insight-stub.port"              -> mockPort,
     "microservice.services.insight.path"                   -> insightPath
   )
 

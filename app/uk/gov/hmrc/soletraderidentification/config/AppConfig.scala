@@ -74,21 +74,20 @@ class AppConfig @Inject() (config: Configuration, servicesConfig: ServicesConfig
 
   lazy val replaceIndexesAtStartUp: Boolean = config.getOptional[Boolean]("mongodb.replaceIndexesAtStartUp").getOrElse(false)
 
-  lazy val insightHost: String = servicesConfig.getString("microservice.services.insight.host")
+  lazy val baseInsightUrl: String = servicesConfig.baseUrl("insight")
 
-  lazy val insightStubHost: String = servicesConfig.getString("microservice.services.insight.stub-host")
+  lazy val insightUrlPath: String = servicesConfig.getString("microservice.services.insight.path")
 
-  lazy val insightPathRoot: String = servicesConfig.getString("microservice.services.insight.path")
+  lazy val baseInsightStubUrl: String = servicesConfig.baseUrl("insight-stub")
+
+  lazy val insightStubUrlPath: String = servicesConfig.getString("microservice.services.insight-stub.path")
 
   lazy val insightResult: String = servicesConfig.getString("microservice.services.insight.result")
 
   lazy val insightMessages: Seq[String] =
     Seq(servicesConfig.getString("microservice.services.insight.message1"), servicesConfig.getString("microservice.services.insight.message2"))
 
-  def getInsightUrl: String = {
-    val host: String = if (isEnabled(InsightStub)) insightStubHost else insightHost
-    s"$host$insightPathRoot/check/insights"
-  }
+  def getInsightUrl: String = if (isEnabled(InsightStub)) s"$baseInsightStubUrl/$insightStubUrlPath" else s"$baseInsightUrl/$insightUrlPath"
 
   lazy val internalAuthToken: String = servicesConfig.getString("internal-auth.token")
 
