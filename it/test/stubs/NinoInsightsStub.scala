@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,19 @@
 
 package stubs
 
-import uk.gov.hmrc.soletraderidentification.services.JourneyIdGenerationService
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import play.api.libs.json.{JsObject, Json}
+import utils.WireMockMethods
 
-class FakeJourneyIdGenerationService(fakeJourneyId: String) extends JourneyIdGenerationService {
-  override def generateJourneyId(): String = fakeJourneyId
+trait NinoInsightsStub extends WireMockMethods {
+
+  def stubRetrieveNinoInsight(nino: String)(status: Int, body: JsObject = Json.obj()): StubMapping = {
+
+    val jsonBody = Json.obj(
+      "nino" -> nino
+    )
+
+    when(method = POST, uri = "/check/insights", body = jsonBody).thenReturn(status, body)
+  }
+
 }

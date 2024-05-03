@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ class JourneyDataRepository @Inject()(mongoComponent: MongoComponent,
       ),
       Updates.set(dataKey, Codecs.toBson(data)),
       UpdateOptions().upsert(false)
-    ).toFuture.map {
+    ).toFuture().map {
       _.getMatchedCount == 1
     }
 
@@ -72,7 +72,7 @@ class JourneyDataRepository @Inject()(mongoComponent: MongoComponent,
     collection.updateOne(
       filterJourneyConfig(journeyId, authInternalId),
       Updates.unset(dataKey)
-    ).toFuture.map {
+    ).toFuture().map {
       _.getMatchedCount == 1
     }
 
@@ -87,11 +87,11 @@ class JourneyDataRepository @Inject()(mongoComponent: MongoComponent,
         AuthInternalIdKey -> authInternalId,
         CreationTimestampKey -> Json.obj("$date" -> Instant.now.toEpochMilli)
       )
-    ).toFuture.map {
+    ).toFuture().map {
       _ != null
     }
 
-  def drop: Future[Unit] = collection.drop().toFuture.map(_ => Unit)
+  def drop: Future[Unit] = collection.drop().toFuture().map(_ => ())
 
   private def filterJourneyConfig(journeyId: String, authInternalId: String): Bson =
     Filters.and(

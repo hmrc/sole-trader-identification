@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ trait ComponentSpecHelper
   override lazy val app: Application = new GuiceApplicationBuilder()
     .configure(config)
     .configure("play.http.router" -> "testOnlyDoNotUseInAppConf.Routes")
-    .build
+    .build()
 
   val mockHost: String = WiremockHelper.wiremockHost
   val mockPort: String = WiremockHelper.wiremockPort.toString
@@ -81,7 +81,7 @@ trait ComponentSpecHelper
   }
 
   def get[T](uri: String): WSResponse =
-    await(buildClient(uri).withHttpHeaders("Authorization" -> "Bearer123").get)
+    await(buildClient(uri).withHttpHeaders("Authorization" -> "Bearer123").get())
 
   def post[T](uri: String)(body: T)(implicit writes: Writes[T]): WSResponse =
     await(

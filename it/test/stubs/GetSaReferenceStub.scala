@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2024 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,18 @@
 package stubs
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsValue, Json}
 import utils.WireMockMethods
 
-trait NinoInsightsStub extends WireMockMethods {
+trait GetSaReferenceStub extends WireMockMethods {
 
-  def stubRetrieveNinoInsight(nino: String)(status: Int, body: JsObject = Json.obj()): StubMapping = {
+  private val desHeaders = Map(
+    "Authorization" -> "Bearer dev",
+    "Environment" -> "dev"
+  )
 
-    val jsonBody = Json.obj(
-      "nino" -> nino
-    )
-
-    when(method = POST, uri = "/check/insights", body = jsonBody).thenReturn(status, body)
-  }
+  def stubGetSaReference(nino: String)(status: Int, body: JsValue = Json.obj()): StubMapping =
+    when(method = GET, uri = s"/corporation-tax/identifiers/nino/$nino", headers = desHeaders)
+      .thenReturn(status, body)
 
 }
