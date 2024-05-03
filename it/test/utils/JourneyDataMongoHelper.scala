@@ -38,7 +38,7 @@ trait JourneyDataMongoHelper extends BeforeAndAfterEach {
         "_id" -> journeyId,
         "authInternalId" -> internalId
       ) ++ jsonData
-    ).toFuture().map(_ => Unit))
+    ).toFuture().map(_ => ()))
 
   override def beforeEach(): Unit = {
     await(repo.drop)

@@ -2,8 +2,8 @@
 # Sole Trader Identification
 
 ### How to run the service
-1. Make sure any dependent services are running using the following service-manager command `sm --start SOLE_TRADER_IDENTIFICATION_ALL -r`
-2. Stop the frontend in service manager using `sm --stop SOLE_TRADER_IDENTIFICATION`
+1. Make sure any dependent services are running using the following service-manager command `sm2 --start SOLE_TRADER_IDENTIFICATION_ALL`
+2. Stop the frontend in service manager using `sm2 --stop SOLE_TRADER_IDENTIFICATION`
 3. Run the frontend locally using
    `sbt 'run 9721 -Dapplication.router=testOnlyDoNotUseInAppConf.Routes'`
 

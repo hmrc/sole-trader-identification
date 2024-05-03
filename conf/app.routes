@@ -20,4 +20,4 @@ POST          /register-trn                                 uk.gov.hmrc.soletrad
 
 POST          /get-trn                                      uk.gov.hmrc.soletraderidentification.controllers.CreateTemporaryReferenceNumberController.createTemporaryReferenceNumber()
 
-POST          /nino-insights                                uk.gov.hmrc.soletraderidentification.controllers.NinoInsightsController.retrieveNinoInsight
+POST          /nino-insights                                uk.gov.hmrc.soletraderidentification.controllers.NinoInsightsController.retrieveNinoInsight()
