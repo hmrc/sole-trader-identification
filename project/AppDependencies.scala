@@ -4,7 +4,7 @@ import sbt._
 
 object AppDependencies {
 
-  val bootStrapVersion: String = "8.5.0"
+  val bootStrapVersion: String = "9.5.0"
   val mongoVersion: String = "1.9.0"
 
   val compile = Seq(
