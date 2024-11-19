@@ -19,16 +19,17 @@ package uk.gov.hmrc.soletraderidentification.connectors
 import play.api.http.Status.OK
 import play.api.libs.json._
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.soletraderidentification.config.AppConfig
 import uk.gov.hmrc.soletraderidentification.connectors.RegisterWithMultipleIdentifiersHttpParser._
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class RegisterWithMultipleIdentifiersConnector @Inject()(http: HttpClient,
+class RegisterWithMultipleIdentifiersConnector @Inject()(httpClientV2: HttpClientV2,
                                                          appConfig: AppConfig
                                                         )(implicit ec: ExecutionContext) {
-  lazy val extraHeaders = Seq(
+  private lazy val extraHeaders = Seq(
     "Authorization" -> appConfig.desAuthorisationToken,
     "Environment" -> appConfig.desEnvironment,
     "Content-Type" -> "application/json"
@@ -36,10 +37,19 @@ class RegisterWithMultipleIdentifiersConnector @Inject()(http: HttpClient,
 
   implicit val httpReads: HttpReads[RegisterWithMultipleIdentifiersResult] = RegisterWithMultipleIdentifiersHttpReads
 
+  private def postToRegisterEndpoint(jsonBody: JsObject, regime: String)(implicit hc: HeaderCarrier) = {
+    httpClientV2
+      .post(url"${appConfig.getRegisterWithMultipleIdentifiersUrl(regime)}")
+      .withBody(jsonBody)
+      .setHeader(extraHeaders:_*)
+      .execute[RegisterWithMultipleIdentifiersResult]
+  }
+
   def registerWithNino(nino: String,
                        optSautr: Option[String],
                        regime: String
                       )(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] = {
+
     val soleTraderIdentifiers = optSautr match {
       case Some(sautr) => Json.obj(
         "nino" -> nino,
@@ -54,18 +64,14 @@ class RegisterWithMultipleIdentifiersConnector @Inject()(http: HttpClient,
       "soleTrader" -> soleTraderIdentifiers
     )
 
-    http.POST[JsObject, RegisterWithMultipleIdentifiersResult](
-      url = appConfig.getRegisterWithMultipleIdentifiersUrl(regime),
-      headers = extraHeaders,
-      body = jsonBody
-    )
-
+    postToRegisterEndpoint(jsonBody, regime)
   }
 
   def registerWithTrn(trn: String,
                       sautr: String,
                       regime: String
                      )(implicit hc: HeaderCarrier): Future[RegisterWithMultipleIdentifiersResult] = {
+
     val jsonBody: JsObject =
       Json.obj(
         "soleTrader" ->
@@ -75,12 +81,7 @@ class RegisterWithMultipleIdentifiersConnector @Inject()(http: HttpClient,
           )
       )
 
-    http.POST[JsObject, RegisterWithMultipleIdentifiersResult](
-      url = appConfig.getRegisterWithMultipleIdentifiersUrl(regime),
-      headers = extraHeaders,
-      body = jsonBody
-    )
-
+    postToRegisterEndpoint(jsonBody, regime)
   }
 
 }
@@ -92,7 +93,7 @@ object RegisterWithMultipleIdentifiersHttpParser {
   val IdentificationValueKey = "idValue"
   val SafeIdKey = "SAFEID"
 
-  object RegisterWithMultipleIdentifiersHttpReads extends HttpReads[RegisterWithMultipleIdentifiersResult] {
+  implicit object RegisterWithMultipleIdentifiersHttpReads extends HttpReads[RegisterWithMultipleIdentifiersResult] {
 
     override def read(method: String, url: String, response: HttpResponse): RegisterWithMultipleIdentifiersResult = {
       response.status match {
