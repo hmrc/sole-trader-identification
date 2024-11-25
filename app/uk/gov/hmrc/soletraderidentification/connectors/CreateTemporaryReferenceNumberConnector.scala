@@ -18,7 +18,8 @@ package uk.gov.hmrc.soletraderidentification.connectors
 
 import play.api.http.Status._
 import play.api.libs.json._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse, InternalServerException}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, InternalServerException, StringContextOps}
 import uk.gov.hmrc.soletraderidentification.config.AppConfig
 import uk.gov.hmrc.soletraderidentification.connectors.CreateTemporaryReferenceHttpParser._
 import uk.gov.hmrc.soletraderidentification.models.{Address, FullName}
@@ -28,7 +29,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CreateTemporaryReferenceNumberConnector @Inject()(http: HttpClient,
+class CreateTemporaryReferenceNumberConnector @Inject()(httpClientV2: HttpClientV2,
                                                         appConfig: AppConfig
                                                        )(implicit ec: ExecutionContext) {
 
@@ -36,14 +37,6 @@ class CreateTemporaryReferenceNumberConnector @Inject()(http: HttpClient,
                                      fullName: FullName,
                                      address: Address
                                     )(implicit hc: HeaderCarrier): Future[String] = {
-
-    val extraHeaders = Seq(
-      "Authorization" -> appConfig.integrationFrameworkAuthorizationToken,
-      "Environment" -> appConfig.integrationFrameworkEnvironment,
-      "OriginatorId" -> appConfig.integrationFrameworkOriginatorId,
-      "Content-Type" -> "application/json"
-    )
-
     val jsonBody: JsObject =
       Json.obj(
         "birthDate" -> dateOfBirth,
@@ -54,22 +47,20 @@ class CreateTemporaryReferenceNumberConnector @Inject()(http: HttpClient,
         "address" -> Json.toJson(address)
       )
 
-    http.POST[JsObject, String](
-      url = appConfig.createTemporaryReferenceNumberUrl,
-      body = jsonBody,
-      headers = extraHeaders
-    )(implicitly[Writes[JsObject]],
-      CreateTemporaryReferenceHttpReads,
-      hc,
-      ec
-    )
+    httpClientV2
+      .post(url"${appConfig.createTemporaryReferenceNumberUrl}")
+      .withBody(jsonBody)
+      .setHeader("Authorization" -> appConfig.integrationFrameworkAuthorizationToken)
+      .setHeader("Environment" -> appConfig.integrationFrameworkEnvironment)
+      .setHeader("OriginatorId" -> appConfig.integrationFrameworkOriginatorId)
+      .setHeader("Content-Type" -> "application/json")
+      .execute[String](CreateTemporaryReferenceHttpReads, ec)
   }
-
 }
 
 object CreateTemporaryReferenceHttpParser {
-  implicit object CreateTemporaryReferenceHttpReads extends HttpReads[String] {
 
+  object CreateTemporaryReferenceHttpReads extends HttpReads[String] {
     override def read(method: String, url: String, response: HttpResponse): String = {
       response.status match {
         case CREATED =>

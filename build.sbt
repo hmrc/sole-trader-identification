@@ -8,9 +8,9 @@ ThisBuild / scalaVersion := "2.13.12"
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .settings(
-    libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test,
+    libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
     // Use Scala options to reduce compiler warnings
-    scalacOptions += "-Wconf:cat=unused-imports&src=routes/.*:s",
+    scalacOptions += "-Wconf:cat=unused-imports&src=routes/.*:s"
   )
   .settings(CodeCoverageSettings.settings: _*)
   .settings(resolvers += Resolver.jcenterRepo)

@@ -18,31 +18,33 @@ package uk.gov.hmrc.soletraderidentification.connectors
 
 import play.api.http.Status.OK
 import play.api.libs.json._
-import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpClient, HttpReads, HttpResponse, InternalServerException}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpReads, HttpResponse, InternalServerException, StringContextOps}
 import uk.gov.hmrc.soletraderidentification.config.AppConfig
-import uk.gov.hmrc.soletraderidentification.connectors.NinoReputationParser.NinoReputationHttpReads
+import uk.gov.hmrc.soletraderidentification.connectors.NinoInsightsConnector.NinoReputationHttpReads
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class NinoInsightsConnector @Inject() (http: HttpClient, appConfig: AppConfig)(implicit ec: ExecutionContext) {
+class NinoInsightsConnector @Inject()(httpClientV2: HttpClientV2, appConfig: AppConfig)(implicit ec: ExecutionContext) {
 
   def retrieveNinoInsight(nino: String)(implicit hc: HeaderCarrier): Future[JsObject] = {
     val jsonBody = Json.obj(
       "nino" -> nino
     )
 
-    http.POST[JsObject, JsObject](appConfig.getInsightUrl, body = jsonBody)(implicitly[Writes[JsObject]],
-                                                                            NinoReputationHttpReads,
-                                                                            hc.copy(authorization = Some(Authorization(appConfig.internalAuthToken))),
-                                                                            ec
-                                                                           )
+    val modifiedHc = hc.copy(authorization = Some(Authorization(appConfig.internalAuthToken)))
+
+    httpClientV2
+      .post(url"${appConfig.getInsightUrl}")(modifiedHc)
+      .withBody(jsonBody)
+      .execute[JsObject](NinoReputationHttpReads, ec)
   }
 
 }
 
-object NinoReputationParser {
+object NinoInsightsConnector {
 
   object NinoReputationHttpReads extends HttpReads[JsObject] {
     override def read(method: String, url: String, response: HttpResponse): JsObject =
