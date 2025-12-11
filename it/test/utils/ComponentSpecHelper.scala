@@ -24,6 +24,7 @@ import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{Json, Writes}
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
+import play.api.libs.ws.writeableOf_JsValue
 import play.api.test.Helpers.{await, _}
 
 trait ComponentSpecHelper

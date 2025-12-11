@@ -23,6 +23,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpReads, HttpResponse, InternalServerE
 import uk.gov.hmrc.soletraderidentification.config.AppConfig
 import uk.gov.hmrc.soletraderidentification.connectors.CreateTemporaryReferenceHttpParser._
 import uk.gov.hmrc.soletraderidentification.models.{Address, FullName}
+import play.api.libs.ws.writeableOf_JsValue
 
 import java.time.LocalDate
 import javax.inject.{Inject, Singleton}
@@ -54,7 +55,7 @@ class CreateTemporaryReferenceNumberConnector @Inject()(httpClientV2: HttpClient
       .setHeader("Environment" -> appConfig.integrationFrameworkEnvironment)
       .setHeader("OriginatorId" -> appConfig.integrationFrameworkOriginatorId)
       .setHeader("Content-Type" -> "application/json")
-      .execute[String](CreateTemporaryReferenceHttpReads, ec)
+      .execute[String](using CreateTemporaryReferenceHttpReads, ec)
   }
 }
 

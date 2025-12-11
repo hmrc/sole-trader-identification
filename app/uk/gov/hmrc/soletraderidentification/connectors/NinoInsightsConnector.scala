@@ -22,6 +22,7 @@ import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpReads, HttpResponse, InternalServerException, StringContextOps}
 import uk.gov.hmrc.soletraderidentification.config.AppConfig
 import uk.gov.hmrc.soletraderidentification.connectors.NinoInsightsConnector.NinoReputationHttpReads
+import play.api.libs.ws.writeableOf_JsValue
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,9 +38,9 @@ class NinoInsightsConnector @Inject()(httpClientV2: HttpClientV2, appConfig: App
     val modifiedHc = hc.copy(authorization = Some(Authorization(appConfig.internalAuthToken)))
 
     httpClientV2
-      .post(url"${appConfig.getInsightUrl}")(modifiedHc)
+      .post(url"${appConfig.getInsightUrl}")(using modifiedHc)
       .withBody(jsonBody)
-      .execute[JsObject](NinoReputationHttpReads, ec)
+      .execute[JsObject](using NinoReputationHttpReads, ec)
   }
 
 }

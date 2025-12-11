@@ -30,7 +30,7 @@ class NinoInsightsController @Inject()(cc: ControllerComponents,
                                        ninoInsightsService: NinoInsightsService
                                       )(implicit ec: ExecutionContext) extends BackendController(cc) with AuthorisedFunctions {
 
-  def retrieveNinoInsight(): Action[String] = Action.async(parse.json[String](json => for {
+  def retrieveNinoInsight(): Action[String] = Action.async(parse.json[String](using json => for {
     nino <- (json \ "nino").validate[String]
   } yield nino)) {
     implicit request =>

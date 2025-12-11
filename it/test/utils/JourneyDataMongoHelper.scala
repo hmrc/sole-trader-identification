@@ -19,8 +19,10 @@ package utils
 import org.scalatest.{BeforeAndAfterEach, Suite}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.libs.json.{JsObject, Json}
+import play.api.libs.ws.writeableOf_JsValue
 import play.api.test.Helpers._
 import uk.gov.hmrc.soletraderidentification.repositories.JourneyDataRepository
+import org.mongodb.scala.ObservableFuture
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
