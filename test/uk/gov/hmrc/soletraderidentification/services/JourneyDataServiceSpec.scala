@@ -19,7 +19,6 @@ package uk.gov.hmrc.soletraderidentification.services
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import org.mockito.stubbing.OngoingStubbing
 import org.mockito.Mockito._
 import play.api.libs.json.{JsString, Json}
 import play.api.test.Helpers._

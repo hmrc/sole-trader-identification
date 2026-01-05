@@ -42,7 +42,7 @@ class RegisterWithMultipleIdentifiersConnector @Inject()(httpClientV2: HttpClien
     httpClientV2
       .post(url"${appConfig.getRegisterWithMultipleIdentifiersUrl(regime)}")
       .withBody(jsonBody)
-      .setHeader(extraHeaders:_*)
+      .setHeader(extraHeaders*)
       .execute[RegisterWithMultipleIdentifiersResult]
   }
 

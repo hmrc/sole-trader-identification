@@ -13,6 +13,7 @@ lazy val microservice = Project(appName, file("."))
     scalacOptions += "-Wconf:src=routes/.*&msg=unused import:silent",
     scalacOptions += "-Wconf:src=routes/.*&msg=unused private member:silent",
     scalacOptions += "-Wconf:src=routes/.*&msg=unused pattern variable:silent",
+    scalacOptions += "-Wconf:msg=Flag.*repeatedly:s"
   )
   .settings(CodeCoverageSettings.settings *)
 

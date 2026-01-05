@@ -19,7 +19,6 @@ package uk.gov.hmrc.soletraderidentification.services
 import org.scalatestplus.mockito.MockitoSugar
 import org.mockito.ArgumentMatchers.{eq => eqTo}
 import org.mockito.Mockito._
-import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.test.Helpers._
@@ -44,7 +43,7 @@ class ValidateSoleTraderDetailsServiceSpec extends AnyWordSpec with Matchers wit
   "validateDetails" should {
     s"return $DetailsMatched" when {
       "the supplied SA Reference matches the stored SA Reference" in {
-        when(mockGetSaReferenceConnector.getSaReference(eqTo(testNino))(eqTo(hc))).thenReturn(Future.successful(Some(testSAUTR)))
+        when(mockGetSaReferenceConnector.getSaReference(eqTo(testNino))(using eqTo(hc))).thenReturn(Future.successful(Some(testSAUTR)))
 
         await(TestValidateIncorporateEntityDetailsService.validateDetails(testNino, testSAUTR)) mustBe DetailsMatched
       }
@@ -53,14 +52,14 @@ class ValidateSoleTraderDetailsServiceSpec extends AnyWordSpec with Matchers wit
       "the supplied SA Reference does not match the stored SA Reference" in {
         val mismatchedTestCtReference = "mismatchedTestCtReference"
 
-        when(mockGetSaReferenceConnector.getSaReference(eqTo(testNino))(eqTo(hc))).thenReturn(Future.successful(Some(testSAUTR)))
+        when(mockGetSaReferenceConnector.getSaReference(eqTo(testNino))(using eqTo(hc))).thenReturn(Future.successful(Some(testSAUTR)))
 
         await(TestValidateIncorporateEntityDetailsService.validateDetails(testNino, mismatchedTestCtReference)) mustBe DetailsMismatched
       }
     }
     s"return $DetailsNotFound" when {
       "there is no stored SA Reference for the provided nino" in {
-        when(mockGetSaReferenceConnector.getSaReference(eqTo(testNino))(eqTo(hc))).thenReturn(Future.successful(None))
+        when(mockGetSaReferenceConnector.getSaReference(eqTo(testNino))(using eqTo(hc))).thenReturn(Future.successful(None))
 
         await(TestValidateIncorporateEntityDetailsService.validateDetails(testNino, testSAUTR)) mustBe DetailsNotFound
       }
