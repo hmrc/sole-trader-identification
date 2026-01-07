@@ -17,7 +17,7 @@
 package uk.gov.hmrc.soletraderidentification.featureswitch.api.controllers
 
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, InjectedController}
+import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents}
 import uk.gov.hmrc.soletraderidentification.featureswitch.api.services.FeatureSwitchService
 import uk.gov.hmrc.soletraderidentification.featureswitch.core.config.FeatureSwitching
 import uk.gov.hmrc.soletraderidentification.featureswitch.core.models.FeatureSwitchSetting
@@ -25,9 +25,9 @@ import uk.gov.hmrc.soletraderidentification.featureswitch.core.models.FeatureSwi
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class FeatureSwitchApiController @Inject()(featureSwitchService: FeatureSwitchService
-                                          ) extends InjectedController with FeatureSwitching {
-  def getFeatureSwitches(): Action[AnyContent] = Action {
+class FeatureSwitchApiController @Inject()(featureSwitchService: FeatureSwitchService, val controllerComponents: ControllerComponents
+                                          ) extends BaseController with FeatureSwitching {
+  def getFeatureSwitches: Action[AnyContent] = Action {
     Ok(Json.toJson(featureSwitchService.getFeatureSwitches()))
   }
 
