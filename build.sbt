@@ -3,16 +3,19 @@ import uk.gov.hmrc.DefaultBuildSettings
 val appName = "sole-trader-identification"
 
 ThisBuild / majorVersion := 0
-ThisBuild / scalaVersion := "2.13.16"
+ThisBuild / scalaVersion := "3.7.4"
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .settings(
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
     // Use Scala options to reduce compiler warnings
-    scalacOptions += "-Wconf:cat=unused-imports&src=routes/.*:s"
+    scalacOptions += "-Wconf:src=routes/.*&msg=unused import:silent",
+    scalacOptions += "-Wconf:src=routes/.*&msg=unused private member:silent",
+    scalacOptions += "-Wconf:src=routes/.*&msg=unused pattern variable:silent",
+    scalacOptions += "-Wconf:msg=Flag.*repeatedly:s"
   )
-  .settings(CodeCoverageSettings.settings: _*)
+  .settings(CodeCoverageSettings.settings *)
 
 lazy val it = project
   .enablePlugins(PlayScala)

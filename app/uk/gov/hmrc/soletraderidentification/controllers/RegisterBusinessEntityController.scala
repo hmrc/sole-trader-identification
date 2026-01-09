@@ -32,7 +32,7 @@ class RegisterBusinessEntityController @Inject()(cc: ControllerComponents,
                                                  val authConnector: AuthConnector
                                                 )(implicit ec: ExecutionContext) extends BackendController(cc) with AuthorisedFunctions {
 
-  def registerWithNino(): Action[(String, Option[String], String)] = Action.async(parse.json[(String, Option[String], String)](json => for {
+  def registerWithNino(): Action[(String, Option[String], String)] = Action.async(parse.json[(String, Option[String], String)](using json => for {
     nino <- (json \ "soleTrader" \ "nino").validate[String]
     sautr <- (json \ "soleTrader" \ "sautr").validateOpt[String]
     regime <- (json \ "soleTrader" \ "regime").validate[String]
@@ -55,7 +55,7 @@ class RegisterBusinessEntityController @Inject()(cc: ControllerComponents,
       }
   }
 
-  def registerWithTrn(): Action[(String, String, String)] = Action.async(parse.json[(String, String, String)](json => for {
+  def registerWithTrn(): Action[(String, String, String)] = Action.async(parse.json[(String, String, String)](using json => for {
     nino <- (json \ "trn").validate[String]
     sautr <- (json \ "sautr").validate[String]
     regime <- (json \ "regime").validate[String]

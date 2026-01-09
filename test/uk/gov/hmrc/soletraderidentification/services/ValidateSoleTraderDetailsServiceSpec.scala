@@ -16,7 +16,9 @@
 
 package uk.gov.hmrc.soletraderidentification.services
 
-import org.mockito.scalatest.{IdiomaticMockito, ResetMocksAfterEachTest}
+import org.scalatestplus.mockito.MockitoSugar
+import org.mockito.ArgumentMatchers.{eq => eqTo}
+import org.mockito.Mockito._
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.test.Helpers._
@@ -27,7 +29,7 @@ import uk.gov.hmrc.soletraderidentification.models.{DetailsMatched, DetailsMisma
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class ValidateSoleTraderDetailsServiceSpec extends AnyWordSpec with Matchers with IdiomaticMockito with ResetMocksAfterEachTest {
+class ValidateSoleTraderDetailsServiceSpec extends AnyWordSpec with Matchers with MockitoSugar {
   val mockGetSaReferenceConnector: GetSaReferenceConnector = mock[GetSaReferenceConnector]
 
   object TestValidateIncorporateEntityDetailsService extends ValidateSoleTraderDetailsService(
@@ -41,7 +43,7 @@ class ValidateSoleTraderDetailsServiceSpec extends AnyWordSpec with Matchers wit
   "validateDetails" should {
     s"return $DetailsMatched" when {
       "the supplied SA Reference matches the stored SA Reference" in {
-        mockGetSaReferenceConnector.getSaReference(eqTo(testNino))(eqTo(hc)) returns Future.successful(Some(testSAUTR))
+        when(mockGetSaReferenceConnector.getSaReference(eqTo(testNino))(using eqTo(hc))).thenReturn(Future.successful(Some(testSAUTR)))
 
         await(TestValidateIncorporateEntityDetailsService.validateDetails(testNino, testSAUTR)) mustBe DetailsMatched
       }
@@ -50,14 +52,14 @@ class ValidateSoleTraderDetailsServiceSpec extends AnyWordSpec with Matchers wit
       "the supplied SA Reference does not match the stored SA Reference" in {
         val mismatchedTestCtReference = "mismatchedTestCtReference"
 
-        mockGetSaReferenceConnector.getSaReference(eqTo(testNino))(eqTo(hc)) returns Future.successful(Some(testSAUTR))
+        when(mockGetSaReferenceConnector.getSaReference(eqTo(testNino))(using eqTo(hc))).thenReturn(Future.successful(Some(testSAUTR)))
 
         await(TestValidateIncorporateEntityDetailsService.validateDetails(testNino, mismatchedTestCtReference)) mustBe DetailsMismatched
       }
     }
     s"return $DetailsNotFound" when {
       "there is no stored SA Reference for the provided nino" in {
-        mockGetSaReferenceConnector.getSaReference(eqTo(testNino))(eqTo(hc)) returns Future.successful(None)
+        when(mockGetSaReferenceConnector.getSaReference(eqTo(testNino))(using eqTo(hc))).thenReturn(Future.successful(None))
 
         await(TestValidateIncorporateEntityDetailsService.validateDetails(testNino, testSAUTR)) mustBe DetailsNotFound
       }

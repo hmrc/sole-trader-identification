@@ -22,6 +22,7 @@ import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.soletraderidentification.config.AppConfig
 import uk.gov.hmrc.soletraderidentification.connectors.RegisterWithMultipleIdentifiersHttpParser._
+import play.api.libs.ws.writeableOf_JsValue
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -41,7 +42,7 @@ class RegisterWithMultipleIdentifiersConnector @Inject()(httpClientV2: HttpClien
     httpClientV2
       .post(url"${appConfig.getRegisterWithMultipleIdentifiersUrl(regime)}")
       .withBody(jsonBody)
-      .setHeader(extraHeaders:_*)
+      .setHeader(extraHeaders*)
       .execute[RegisterWithMultipleIdentifiersResult]
   }
 

@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.soletraderidentification.services
 
-import org.mockito.scalatest.{IdiomaticMockito, ResetMocksAfterEachTest}
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+import org.mockito.Mockito._
 import play.api.libs.json.{JsString, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.soletraderidentification.repositories.JourneyDataRepository
@@ -26,7 +27,7 @@ import uk.gov.hmrc.soletraderidentification.repositories.JourneyDataRepository
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class JourneyDataServiceSpec extends AnyWordSpec with Matchers with IdiomaticMockito with ResetMocksAfterEachTest {
+class JourneyDataServiceSpec extends AnyWordSpec with Matchers with MockitoSugar {
 
   val mockJourneyDataRepository: JourneyDataRepository = mock[JourneyDataRepository]
   val mockJourneyIdGenerationService: JourneyIdGenerationService = mock[JourneyIdGenerationService]
@@ -38,8 +39,8 @@ class JourneyDataServiceSpec extends AnyWordSpec with Matchers with IdiomaticMoc
 
   "createJourney" should {
     "call to store a new journey with the generated journey ID" in {
-      mockJourneyIdGenerationService.generateJourneyId() returns testJourneyId
-      mockJourneyDataRepository.createJourney(eqTo(testJourneyId), eqTo(testInternalId)) returns Future.successful(testJourneyId)
+      when(mockJourneyIdGenerationService.generateJourneyId()).thenReturn(testJourneyId)
+      when(mockJourneyDataRepository.createJourney(testJourneyId, testInternalId)).thenReturn(Future.successful(testJourneyId))
 
       await(TestJourneyDataService.createJourney(testInternalId)) mustBe testJourneyId
     }
@@ -50,14 +51,14 @@ class JourneyDataServiceSpec extends AnyWordSpec with Matchers with IdiomaticMoc
       "the data exists in the database" in {
         val testJourneyData = Json.obj("testKey" -> "testValue")
 
-        mockJourneyDataRepository.getJourneyData(testJourneyId, testInternalId) returns Future.successful(Some(testJourneyData))
+        when(mockJourneyDataRepository.getJourneyData(testJourneyId, testInternalId)).thenReturn(Future.successful(Some(testJourneyData)))
 
         await(TestJourneyDataService.getJourneyData(testJourneyId, testInternalId)) mustBe Some(testJourneyData)
       }
     }
     "return None" when {
       "the data does not exist in the database" in {
-        mockJourneyDataRepository.getJourneyData(testJourneyId, testInternalId) returns Future.successful(None)
+        when(mockJourneyDataRepository.getJourneyData(testJourneyId, testInternalId)).thenReturn(Future.successful(None))
 
         await(TestJourneyDataService.getJourneyData(testJourneyId, testInternalId)) mustBe None
       }
@@ -72,7 +73,7 @@ class JourneyDataServiceSpec extends AnyWordSpec with Matchers with IdiomaticMoc
 
         val testJourneyData = Json.obj(testKey -> testValue)
 
-        mockJourneyDataRepository.getJourneyData(testJourneyId, testInternalId) returns Future.successful(Some(testJourneyData))
+        when(mockJourneyDataRepository.getJourneyData(testJourneyId, testInternalId)).thenReturn(Future.successful(Some(testJourneyData)))
 
         await(TestJourneyDataService.getJourneyDataByKey(testJourneyId, testKey, testInternalId)) mustBe Some(JsString(testValue))
 
@@ -82,7 +83,7 @@ class JourneyDataServiceSpec extends AnyWordSpec with Matchers with IdiomaticMoc
       "the data does not exist in the database" in {
         val testKey = "testKey"
 
-        mockJourneyDataRepository.getJourneyData(testJourneyId, testInternalId) returns Future.successful(None)
+        when(mockJourneyDataRepository.getJourneyData(testJourneyId, testInternalId)).thenReturn(Future.successful(None))
 
         await(TestJourneyDataService.getJourneyDataByKey(testJourneyId, testKey, testInternalId)) mustBe None
       }
@@ -96,7 +97,7 @@ class JourneyDataServiceSpec extends AnyWordSpec with Matchers with IdiomaticMoc
 
     "return true when the data field is successfully updated" in {
 
-      mockJourneyDataRepository.updateJourneyData(testJourneyId, testInternalId, testKey, testValue) returns Future.successful(true)
+      when(mockJourneyDataRepository.updateJourneyData(testJourneyId, testInternalId, testKey, testValue)).thenReturn(Future.successful(true))
 
       await(TestJourneyDataService.updateJourneyData(testJourneyId, testInternalId, testKey, testValue)) mustBe true
 
@@ -104,7 +105,7 @@ class JourneyDataServiceSpec extends AnyWordSpec with Matchers with IdiomaticMoc
 
     "return false when an update fails" in {
 
-      mockJourneyDataRepository.updateJourneyData(testJourneyId, testInternalId, testKey, testValue) returns Future.successful(false)
+      when(mockJourneyDataRepository.updateJourneyData(testJourneyId, testInternalId, testKey, testValue)).thenReturn(Future.successful(false))
 
       await(TestJourneyDataService.updateJourneyData(testJourneyId, testInternalId, testKey, testValue)) mustBe false
 
@@ -117,7 +118,7 @@ class JourneyDataServiceSpec extends AnyWordSpec with Matchers with IdiomaticMoc
 
     "return true when a data field is successfully removed" in {
 
-      mockJourneyDataRepository.removeJourneyDataField(testJourneyId, testInternalId, testKey) returns Future.successful(true)
+      when(mockJourneyDataRepository.removeJourneyDataField(testJourneyId, testInternalId, testKey)).thenReturn(Future.successful(true))
 
       await(TestJourneyDataService.removeJourneyDataField(testJourneyId, testInternalId, testKey)) mustBe true
 
@@ -125,7 +126,7 @@ class JourneyDataServiceSpec extends AnyWordSpec with Matchers with IdiomaticMoc
 
     "return false when a data field is not successfully removed" in {
 
-      mockJourneyDataRepository.removeJourneyDataField(testJourneyId, testInternalId, testKey) returns Future.successful(false)
+      when(mockJourneyDataRepository.removeJourneyDataField(testJourneyId, testInternalId, testKey)).thenReturn(Future.successful(false))
 
       await(TestJourneyDataService.removeJourneyDataField(testJourneyId, testInternalId, testKey)) mustBe false
 
@@ -136,7 +137,7 @@ class JourneyDataServiceSpec extends AnyWordSpec with Matchers with IdiomaticMoc
     "return true" when {
       "the data field exist and has been removed" in {
 
-        mockJourneyDataRepository.removeJourneyData(testJourneyId, testInternalId) returns Future.successful(true)
+        when(mockJourneyDataRepository.removeJourneyData(testJourneyId, testInternalId)).thenReturn(Future.successful(true))
 
         await(TestJourneyDataService.removeJourneyData(testJourneyId, testInternalId)) mustBe true
       }
@@ -145,7 +146,7 @@ class JourneyDataServiceSpec extends AnyWordSpec with Matchers with IdiomaticMoc
     "return false" when {
       "the data field does not exist" in {
 
-        mockJourneyDataRepository.removeJourneyData(testJourneyId, testInternalId) returns Future.successful(false)
+        when(mockJourneyDataRepository.removeJourneyData(testJourneyId, testInternalId)).thenReturn(Future.successful(false))
 
         await(TestJourneyDataService.removeJourneyData(testJourneyId, testInternalId)) mustBe false
       }

@@ -27,7 +27,7 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
 
   val switches = Seq(StubGetSaReference, DesStub, CreateTrnStub, InsightStub)
 
-  override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
+  override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[?]] = {
     Seq(
       bind[FeatureSwitchRegistry].to(this).eagerly()
     )

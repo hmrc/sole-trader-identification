@@ -33,7 +33,7 @@ class CreateTemporaryReferenceNumberController @Inject()(cc: ControllerComponent
                                                          val authConnector: AuthConnector
                                                         )(implicit ec: ExecutionContext) extends BackendController(cc) with AuthorisedFunctions {
 
-  def createTemporaryReferenceNumber(): Action[(LocalDate, FullName, Address)] = Action.async(parse.json[(LocalDate, FullName, Address)](json => for {
+  def createTemporaryReferenceNumber(): Action[(LocalDate, FullName, Address)] = Action.async(parse.json[(LocalDate, FullName, Address)](using json => for {
     dateOfBirth <- (json \ "dateOfBirth").validate[LocalDate]
     fullName <- (json \ "fullName").validate[FullName]
     address <- (json \ "address").validate[Address]
