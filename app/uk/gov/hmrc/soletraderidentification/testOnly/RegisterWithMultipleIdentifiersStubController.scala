@@ -33,6 +33,7 @@ class RegisterWithMultipleIdentifiersStubController @Inject()(controllerComponen
       val stubbedSafeId = nino match {
         case Some("ZT790941B") => "XH0000100382440" // PPT Testing
         case Some("ST497186D") => "XY0000100382439" // PPT Testing
+        case Some("AE878717A") => "XX0000100030527" // MMTAR Testing
         case _ => "X00000123456789"
       }
 
