@@ -34,6 +34,8 @@ class RegisterWithMultipleIdentifiersStubController @Inject()(controllerComponen
         case Some("ZT790941B") => "XH0000100382440" // PPT Testing
         case Some("ST497186D") => "XY0000100382439" // PPT Testing
         case Some("AE878717A") => "XX0000100030527" // MMTAR Testing
+        case Some("MM000014A") => "XK0000100094456" // MMTAR Testing - Sole Trader 1 (UTR: 1987650003)
+        case Some("MM000015A") => "XZ0000100095027" // MMTAR Testing - Sole Trader 2 (UTR: 6987650022)
         case _ => "X00000123456789"
       }
 
